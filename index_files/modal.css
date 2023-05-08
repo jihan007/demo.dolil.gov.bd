@@ -1,0 +1,40 @@
+.mylocker-modal-bg{
+    background-color: rgb(17 24 39 / 0.6);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    position: fixed;
+    width: 100vw;
+    height: 100%;
+    overflow: hidden;
+    z-index: 99999999 !important;
+}
+.mylocker-modal-index{
+    z-index: 99999999999 !important;
+}
+.mylocker-modal-container{
+    background: #FFFFFF;
+    border-radius:10px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 999999;
+}
+.mylocker-with-full{
+    width: 100%;
+}
+.mylocker-iframe{
+    aspect-ratio: 1 / 1;
+    width: 50vw;
+}
+.mylocker-model-hide{
+    opacity: 0;
+    display: none;
+}
+.mylocker-model-show{
+    opacity: 100;
+    display: flex;
+}

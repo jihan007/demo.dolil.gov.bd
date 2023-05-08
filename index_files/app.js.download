@@ -1,0 +1,1036 @@
+/**
+ * Created by Md. Munir Hossain on 06/06/2021.
+ */
+function engToBngNum(str){
+    str = str.toString();
+    str = str.replace(/0/g,'০');
+    str = str.replace(/1/g,'১');
+    str = str.replace(/2/g,'২');
+    str = str.replace(/3/g,'৩');
+    str = str.replace(/4/g,'৪');
+    str = str.replace(/5/g,'৫');
+    str = str.replace(/6/g,'৬');
+    str = str.replace(/7/g,'৭');
+    str = str.replace(/8/g,'৮');
+    str = str.replace(/9/g,'৯');
+    return str;
+}
+
+function removeRequiredError() {
+    $('.required-error').on('change, input',function(){
+        $(this).removeClass('required-error');
+    });
+}
+
+var myLockerBambooBtn = '';
+function checkInputField() {
+    var getInputVal = $('#mylockerFilee').val();
+    if(getInputVal != "") {
+        $('.mylockerImageDiv img').attr('src', getInputVal);
+        $('#mylockerFilee').attr('data-val',$('#mylockerFilee').val());
+        $('#mylockerFilee').val('');
+        var mylockerUrl = $('#mylockerFilee').attr('data-val');
+    }
+}
+
+function checkMyLocakerData(){
+    var mylockerUrl = $('#mylockerFilee').val();
+    if(mylockerUrl !="") {
+        // console.log('mylockerUrl-rana');
+        $('#mylockerFilee').val('');
+        $.ajax({
+            datType: 'json',
+            url: "https://www.mygov.bd/attachment/mylockerDoc?mylockerUrl="+decodeURIComponent(mylockerUrl),
+            type: "GET",
+            // data: {'mylockerUrl': mylockerUrl},
+            processData: false,
+            contentType: false,
+            success: function(data) {
+                data = JSON.parse(data);
+                myLockerBambooBtn.parent('div.attachment').append('<div class="fileInfo fs-8"><span class="text-primary">File Name:</span>Attachment from mylocker<span class="ms-2 text-primary">File Size:</span> 1MB </div>');
+                myLockerBambooBtn.parent('div.attachment').removeClass('required-error');
+                myLockerBambooBtn.parent('div.attachment').find('[type="hidden"]').remove();
+                myLockerBambooBtn.parent('div.attachment').append('<input type="hidden" class="att-picture" name="attachments[]" value="' + data['fid'] + '" />');
+                myLockerBambooBtn = '';
+            }
+        });
+    }
+    setTimeout(checkMyLocakerData,3000);
+}
+
+function initMyLockerActivities(){
+    if($('.mylocker-picker-btn').length) {
+        $('.mylocker-picker-btn').on('click',function(){
+            myLockerBambooBtn = $(this);
+            $('.mylockerImageDiv').addClass('d-none');
+            $('.mylockerImageDiv  img').attr('src', '');
+            checkMyLocakerData();
+            checkInputField();
+        });
+    }
+}
+
+jQuery(document).ready(function(){
+    // window.onscroll = function() {NavFunction()};
+
+    // var navbar = document.getElementById("myGovNav");
+    // var sticky = navbar.offsetTop;
+
+    // function NavFunction() {
+    //     if (window.pageYOffset >= sticky) {
+    //         navbar.classList.add("sticky")
+    //     } else {
+    //         navbar.classList.remove("sticky");
+    //     }
+    // }
+
+    //let timVine = document.getElementById("bannerCont");
+    let navbar = document.getElementById("myGovNav");
+
+    let navPos = navbar.getBoundingClientRect().top;
+
+    window.addEventListener("scroll", e => {
+    let scrollPos = window.scrollY;
+    if (scrollPos > navPos) {
+        navbar.classList.add('sticky');
+    } else {
+        navbar.classList.remove('sticky');
+    }
+    });
+
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+    
+    $.fn.hasAttr = function(name) {
+        return this.attr(name) !== undefined;
+    };
+
+    $('.onlyEn').bind('keyup blur',function() {
+        $(this).val($(this).val().replace(/[^A-Za-z\-\. ]/g,''))
+    });
+
+    $('.onlyBn').bind('keyup blur',function() {
+        $(this).val($(this).val().replace(/[^\u0980-\u09ff\-\. ]/g,''))
+    });
+
+    if($('form#application-form').length){
+        $('form#application-form').find('label,.office_name,.office_address').attr('tabindex',0);
+    }
+
+    /*Service Category on service list*/
+    if($('.service-category').length){
+        $('.service-category').on('click',function(){
+            if($(this).parent('li').find('ul').css('display')=='none') {
+                $('.service-category').parent('li').find('ul').slideUp();
+                $(this).parent('li').find('ul').slideDown();
+            }else{
+                $('.service-category').parent('li').find('ul').slideUp();
+            }
+        });
+    }
+    /*Service Category on service list*/
+
+    /*List Search*/
+    function serviceListSearch() {
+        if($('.service-list-search-input').length) {
+            $(".service-list-search-input").on("keyup", function () {
+                var value = $(this).val().toLowerCase();
+                $(this).parents('.service-list-search').find(".service-list li").filter(function () {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                });
+            });
+        }
+    }
+    /*List Search*/
+
+    /*Office Layer 3 on service list*/
+    if($('.office-level').length) {
+        $('.office-level').change(function () {
+            var v = $(this).val();
+            $('.office-level3').addClass('d-none');
+            $('.office-level3-' + v).removeClass('d-none');
+        });
+
+        $('.office-level3').addClass('d-none');
+        var l = $('.office-level').attr('data-id');
+        $('.office-level3-' + l).removeClass('d-none');
+        $('.office-level').find('option:nth-child(' + l + ')').attr('selected', 'selected');
+    }
+    /*Office Layer 3 on service list*/
+
+    /*Service Form*/
+
+    $('select').on('change',function(){
+        $(this).find('option').removeAttr('selected');
+        $(this).find('option[value="'+$(this).val()+'"]').attr('selected','selected');
+    });
+
+
+
+    if($('.apply-application')){
+        $('.apply-application').on('click',function(){
+
+            var requiredMissing = 1;
+            var isMissing = 0;
+
+            $('#office-selection select').each(function(){
+                if($(this).is(':visible') && $(this).val()==''){
+                    if(isMissing==0) {
+                        $(window).scrollTop(($(this).offset().top - 150));
+                        isMissing = 1;
+                    }
+                    $(this).addClass('required-error');
+                    requiredMissing = 0;
+                }
+            });
+
+            if(requiredMissing==1 && $(this).attr('data-type')=='apply'){
+                $('[required="required"]').each(function(){
+                    if($(this).is(':visible') || $(this).hasClass('attachment-value')) {
+
+                        if($(this).attr('type')=='radio' && !$('input[name="'+$(this).attr('name')+'"]').is(':checked')){
+                            if (isMissing == 0) {
+                                $(window).scrollTop(($(this).offset().top - 150));
+                                requiredMissing = 0;
+                                isMissing = 1;
+                            }
+                            $(this).addClass('required-error');
+                        }else if($(this).attr('type')=='checkbox' && !$('input[name="'+$(this).attr('name')+'"]').is(':checked')){
+                            if (isMissing == 0) {
+                                $(window).scrollTop(($(this).offset().top - 150));
+                                requiredMissing = 0;
+                                isMissing = 1;
+                            }
+                            $(this).addClass('required-error');
+                        }else if ($(this).val() == '' || $(this).val() == null) {
+                            if (isMissing == 0) {
+                                $(window).scrollTop(($(this).offset().top - 150));
+                                requiredMissing = 0;
+                                isMissing = 1;
+                            }
+                            $(this).addClass('required-error');
+
+                            /*if ($(this).hasClass('attachment-value')) {
+                                var p = $(this).parent('div.selected-attachment');
+                                p.find('.selected-attachment-name').addClass('error p-2');
+                                p.find('.selected-attachment-name').html('সংযুক্তি প্রদান করুন * ');
+
+                                if($(this).parents('td').attr('id')=='att7'){
+                                    $('input[name="applicant_name"]').addClass('error');
+                                }
+                            } else if ($(this).hasClass('select2-hidden-accessible')) {
+                                var p = $(this).parent('div');
+                                p.find('.select2-selection__rendered').addClass('error');
+                                //p.find('.selected-attachment-name').html('সংযুক্তি প্রদান করুন * ');
+                            }
+                            s = 0;
+                            vi = 1;
+                            error();*/
+                        } else $(this).removeClass('required-error');
+                    }
+                });
+            }
+
+            if(requiredMissing==1 && $(this).attr('data-type')=='apply'){
+                $('.attachment input[type="file"]').each(function(){
+                    /*if($(this).parents('div.attachment').find('.att-picture').length && $(this).parents('div.attachment').find('.att-picture').val()=="") {
+                        if ($(this).hasAttr('required') && $(this).val() == '') {
+                            if (isMissing == 0) {
+                                $("html, body").animate({scrollTop: ($(this).parents('div.attachment').offset().top - 150)}, "slow");
+                                requiredMissing = 0;
+                                isMissing = 1;
+                            }
+                            $(this).parents('div.attachment').addClass('required-error');
+                        }
+                    }*/
+                    if($(this).hasAttr('required') && $(this).val()==''){
+                        if (isMissing == 0) {
+                            // $("html, body").animate({scrollTop: ($(this).parents('div.attachment').offset().top - 150)}, "slow");
+                            $(window).scrollTop(($(this).offset().top - 150));
+                            requiredMissing = 0;
+                            isMissing = 1;
+                        }
+                        $(this).parents('div.attachment').addClass('required-error');
+                    }
+                });
+            }
+
+            if(requiredMissing==0)
+                removeRequiredError()
+
+            if(requiredMissing==1) {
+
+                if($(this).attr('data-type')=='apply')
+                    $('input[name="is_complete"]').val(1);
+                else
+                    $('input[name="is_complete"]').val(0);
+
+                var html = $('.application-form form#application-form').clone();
+                $('#previewApplicationModal').find('.modal-body').html(html);
+                $('#previewApplicationModal').find('.modal-body').find('[obd="add-content"]').remove();
+                $('#previewApplicationModal').find('.modal-body').find('select').attr('disabled', 'disabled');
+                $('#previewApplicationModal').find('.modal-body').find('input').attr('disabled', 'disabled');
+                $('#previewApplicationModal').find('.modal-body').find('textarea').attr('disabled', 'disabled');
+                $('#previewApplicationModal').find('.modal-body').find('.far.fa-eye,.fas.fa-cloud-upload-alt,.fas.fa-download').remove();
+
+                $('#previewApplicationModal').find('.modal-body').find('[obd="dsignature"]').each(function(){
+                    $(this).find('canvas').remove();
+                    var tmp = $(this).find('input[type="hidden"]').val();
+                    $(this).find('input[type="hidden"]').remove();
+                    $(this).prepend('<img src="'+tmp+'" />');
+                });
+                $('#previewApplicationModal').find('[data-type="apply"],[data-type="draft"]').hide();
+                $('#previewApplicationModal').find('[data-type="' + $(this).attr('data-type') + '"]').show();
+
+                $('#previewApplicationModal').modal('show');
+
+                $('.apply-application-btn').on('click',function(){
+                    $(this).parent('div.modal-footer').html('<i class="fa fa-spinner fa-spin me-2 text-warning"></i>প্রক্রিয়াধীন...');;
+                    $('#application-form').find('[name="apply_application"]').remove();
+                    if(requiredMissing==1 && $(this).attr('data-type')=='apply')
+                        $('#application-form').append('<input type="hidden" name="apply_application" value="apply"/>');
+                    $('#application-form').submit();
+                });
+            }
+        });
+    }
+
+    /*Signature*/
+    var canvasG = [];
+    var ctxG = [];
+    var drawingG = [];
+    var prevXG = [];
+    var prevYG = [];
+    var currXG = [];
+    var currYG = [];
+    var signatureG = [];
+
+    if($('[obd="dsignature"]').length){
+        var i = 1;
+        $('[obd="dsignature"]').each(function(){
+            var id = $(this).find('canvas').attr('id');
+            if(id !== undefined && id !== null) {
+                dsignature(id, i);
+                i = i + 1;
+            }
+        });
+    }
+    function dsignature(id, i){
+        canvasG[i] = document.getElementById(id);
+        var ctx = canvasG[i].getContext("2d");
+        drawingG[i] = false;
+        signatureG[i] = document.getElementsByName(id)[0];
+
+        canvasG[i].addEventListener("mousemove", draw);
+        canvasG[i].addEventListener("mouseup", stop);
+        canvasG[i].addEventListener("mousedown", start);
+
+        function start(e) {
+            drawingG[i] = true;
+        }
+
+        function stop() {
+            drawingG[i] = false;
+            prevXG[i] = prevYG[i] = null;
+            signatureG[i].value = canvasG[i].toDataURL();
+        }
+
+        function draw(e) {
+
+            if (!drawingG[i]) {
+                return;
+            }
+            var clientX = e.type === 'touchmove' ? e.touches[0].clientX : e.pageX;
+            var clientY = e.type === 'touchmove' ? e.touches[0].clientY : e.pageY;
+            currXG[i] = clientX - $('#'+id).offset().left;
+            currYG[i] = clientY - $('#'+id).offset().top;
+
+            if (!prevXG[i] && !prevYG[i]) {
+                prevXG[i] = currXG[i];
+                prevYG[i] = currYG[i];
+            }
+
+            ctx.beginPath();
+            ctx.moveTo(prevXG[i], prevYG[i]);
+            ctx.lineTo(currXG[i], currYG[i]);
+            ctx.strokeStyle = 'black';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            ctx.closePath();
+
+            prevXG[i] = currXG[i];
+            prevYG[i] = currYG[i];
+        }
+
+        $('[obd="clear-dsignature"]').on('click',function(){
+            var p = $(this).parents('[obd-type="digital-signature"]');
+            var n = p.find('canvas').attr('id');
+            n = n.replace('dsignature','');
+            var ctx = canvasG[n].getContext("2d");
+            ctx.clearRect(0, 0, p.find('canvas').attr('width'), p.find('canvas').attr('height'));
+        });
+    }
+    /*Signature*/
+
+    /*Upload image and signature*/
+    if($('[obd="uphoto"]').length){
+        var i = 1;
+        $('[obd="uphoto"]').each(function(){
+            imageCrop('uphoto' + i, 'photo');
+            i = i + 1;
+        });
+    }
+    if($('[obd="usignature"]').length){
+        var i = 1;
+        $('[obd="usignature"]').each(function(){
+            imageCrop('usignature' + i, 'signature');
+            i = i + 1;
+        });
+    }
+    function imageCrop(id, type){
+        var $modal = $('#cropImageModal');
+        var image = document.getElementById('imageForCropped');
+        var cropper;
+
+        var resizeForm = '';
+        var imageName = '';
+        var resizeWidth = 0;
+        var resizeHeight = 0;
+
+        $('[obd="upload-image"]').on('click',function(e){
+            if($(this).parents('[obd="usignature"]').length)
+                type = 'signature';
+            else type = 'photo';
+
+            var p;
+            if(type=='signature'){
+                $modal.find('[obd="cropImage-title"]').html('Resize Signature');
+                $modal.find('[obd="cropImage-title-1"]').html('Your Signature');
+                $modal.find('[obd="cropImage-title-2"]').html('New Resize Signature');
+                $modal.find('#imageForCropped').attr('data-width',150);
+                $modal.find('#imageForCropped').attr('data-height',75);
+                $modal.find('#imageForCropped').attr('data-type','signature');
+            }else{
+                $modal.find('[obd="cropImage-title"]').html('Resize Photo');
+                $modal.find('[obd="cropImage-title-1"]').html('Your Photo');
+                $modal.find('[obd="cropImage-title-2"]').html('New Resize Photo');
+                $modal.find('#imageForCropped').attr('data-width',100);
+                $modal.find('#imageForCropped').attr('data-height',120);
+                $modal.find('#imageForCropped').attr('data-type','photo');
+            }
+
+            if(type=='signature')
+                p = $(this).parents('[obd="usignature"]');
+            else
+                p = $(this).parents('[obd="uphoto"]');
+            p.find('input[type="file"]').trigger('click');
+            e.stopImmediatePropagation();
+        });
+
+        $('#'+id).on("change", function(e){
+            resizeForm = $('#'+$(this).attr('data-form-id'));
+            imageName = $('input[name="'+id+'"]').attr('name');
+
+            $('[obd="previewCroppedImage"]').css('width',$('#cropImageModal').find('#imageForCropped').attr('data-width'));
+            $('[obd="previewCroppedImage"]').css('height',$('#cropImageModal').find('#imageForCropped').attr('data-height'));
+
+            var files = e.target.files;
+            var done = function (url) {
+                image.src = url;
+                $modal.modal('show');
+                $modal.find('[obd="cropSignature"]').attr('data-id',id);
+                $('#resizeSignatureModal').css('padding','0');
+                $('#resizeSignatureModal').css('background','url(img/black-bg.png)');
+            };
+            var reader;
+            var file;
+            var url;
+
+            if (files && files.length > 0) {
+                file = files[0];
+
+                if (URL) {
+                    done(URL.createObjectURL(file));
+                } else if (FileReader) {
+                    reader = new FileReader();
+                    reader.onload = function (e) {
+                        done(reader.result);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            }
+            e.stopImmediatePropagation();
+        });
+
+        $modal.on('shown.bs.modal', function () {
+            resizeWidth = $('#cropImageModal').find('#imageForCropped').attr('data-width');
+            resizeHeight = $('#cropImageModal').find('#imageForCropped').attr('data-height');
+            cropper = new Cropper(image, {
+                aspectRatio: resizeWidth/resizeHeight,
+                viewMode: 1,
+                preview: '[obd="previewCroppedImage"]'
+            });
+        }).on('hidden.bs.modal', function () {
+            cropper.destroy();
+            cropper = null;
+        });
+
+        $('[obd="cropSignature"]').click(function(){
+            var id = $(this).attr('data-id');
+            canvas = cropper.getCroppedCanvas({
+                width: $('#cropImageModal').find('#imageForCropped').attr('data-width'),
+                height: $('#cropImageModal').find('#imageForCropped').attr('data-height'),
+            });
+            canvas.toBlob(function(blob) {
+                url = URL.createObjectURL(blob);
+                var reader = new FileReader();
+                reader.readAsDataURL(blob);
+                reader.onloadend = function() {
+                    var base64data = reader.result;
+
+                    $('input[name="'+id+'"]').val(base64data);
+                    if($modal.find('#imageForCropped').attr('data-type')=='signature')
+                        $('input[name="'+id+'"]').parents('[obd="usignature"]').find('img').attr('src',base64data);
+                    else
+                        $('input[name="'+id+'"]').parents('[obd="uphoto"]').find('img').attr('src',base64data);
+                    $modal.modal('hide');
+                }
+            });
+        });
+
+        $('[obd="clear-image"]').on('click',function(){
+            var p = $(this).parent('div');
+            p.find('img').removeAttr('src');
+            p.find('input[type="hidden"]').val('');
+            p.find('input[type="file"]').val('');
+        });
+    }
+    /*Upload image and signature*/
+
+    var more = '<div class="attachment"><label label_en="Others" attachment-type="others">অন্যান্য</label><input type="file" name="attachment[others][]" style="display: none;"><i class="fas fa-trash text-danger upload-remove-but"></i></div>';
+
+    if(attachments.length){
+        for(var h=$('.attachment').length; h<attachments.length; h++) {
+            $('.attachment-add-more').before(more);
+        }
+        $('.attachment').find('.fas.fa-trash').remove();
+        $('.fas.fa-trash').on('click',function(){
+            $(this).parents('.attachment').remove();
+        });
+    }
+
+    if($('#attachments').length && $('form#application-form').length){
+
+
+        $('#attachments').append('<form id="attachmentUpload" method="post" action="'+baseUrl+'attachment/upload" enctype="multipart/form-data"></form>');
+        var i = 0;
+        $('.attachment-add-more').on('click',function(){
+            $(this).before(more);
+            attachmentFunction();
+        });
+
+        function attachmentFunction() {
+            $('.fas.fa-trash').on('click',function(){
+                $(this).parents('.attachment').remove();
+            });
+
+            $('.attachment').each(function () {
+                $(this).find('[type="file"]').hide();
+                // $(this).find('.attach-view:last').remove();
+                $(this).find('#mylockerFilee:last').remove();
+                $(this).find('.mylocker-picker-btn:last').remove();
+                $(this).find('.upload-but:last').remove();
+
+                //for beta version start
+                $(this).append('<i class="far fa-eye attach-view color-primary mr-2 d-none"></i>');
+                $(this).append('<input type="text" id="mylockerFilee" class="border" style="display:none;"><span class="btn btn-rounded btn-file mylocker-picker mylocker-picker-btn" style="position: absolute;top: 0; right: 125px;height: 35px;display:inline-block" x-mlokcer=\'{"citizen_id":'+getCitizenId+', "input":"#mylockerFilee", showAttachButton:true}\'><img src="' + baseUrl + 'img/mylocker_icon.png" height="20px" width="20px" /></span>');
+                $(this).append('<i class="fas fa-cloud-upload-alt upload-but"></i>');
+                $(this).append('<div class="uploading-container-right mylockerImageDiv d-none"><img src="" height="205" width="400" style="padding: 0px 25px;"></div>');
+                if (attachments[i] !== undefined && attachments[i] !== null) {
+                    $(this).find('input[name="attachments*"]').remove();
+                    $(this).append('<input type="hidden" class="att-picture" name="attachments[]" value="' + attachments[i] + '" />');
+                    
+                    $(this).append('<i class="fas fa-download download-attachment-but text-info new-download-doc"></i>');
+                    //Munir 2022-08-28
+                    $(this).find('.fa-eye.attach-view').removeClass('d-none');
+                    if($(this).find('label[label_en="Others"]').length) {
+                        $(this).append('<i class="fas fa-trash text-danger upload-remove-but"></i>');
+                    }
+                    if($(this).find('.att-picture').val().length != '') {
+                        $(this).parents().find('[type="file"]').removeAttr('required');
+                    }
+                } else {
+                    var td = $(this);
+                    if (td.is(":first-child")) {
+                    }
+                    $(this).find('input[name="attachments*"]').remove();
+                    $(this).append('<input type="hidden" name="attachments[]" value="" />');
+                }
+                i = i + 1;
+                initMyLocker();
+                initMyLockerActivities();
+            });
+
+            $('.attachment .fa-eye').on('click', function () {
+                var p = $(this).parent('.attachment');
+                var v = p.find('.att-picture').val();
+
+                $('#attachment-view').find('.modal-body').html('<iframe src="' + baseUrl + 'attachment/view/?fid=' + v + '" width="100%" height="400px" frameborder="0"></iframe>');
+                $('#attachment-view').modal('show');
+
+                p = $(this).parents('tr.attachment-row');
+                var t = p.find('td:first-child').clone();
+                t.find('span').remove();
+                $('#attachment-view').find('.modal-title').html(t.html());
+
+            });
+
+            $('.upload-but').on('click', function () {
+                var par = $(this).parent('.attachment');
+                par.removeClass('required-error');
+                par.find('[type="file"]').trigger('click');
+            });
+
+
+
+            //for beta version end
+
+            $('.attachment [type="file"]').change(function (e) {
+                var file = $(this).val();
+                var fName = file.match(/\\([^\\]+)$/)[1];
+
+                var fSize = parseFloat(this.files[0].size) / 1024;
+                if (fSize / 1024 > 1) {
+                    if (((fSize / 1024) / 1024) > 1) {
+                        fSize = (Math.round(((fSize / 1024) / 1024) * 100) / 100);
+                        fSize = (fSize + "Gb");
+                    } else {
+                        fSize = (Math.round((fSize / 1024) * 100) / 100)
+                        fSize = (fSize + "Mb");
+                    }
+                } else {
+                    fSize = (Math.round(fSize * 100) / 100)
+                    fSize = (fSize + "kb");
+                }
+
+                var ext = fName.split('.');
+                ext = ext[ext.length - 1];
+                ext = ext.toLowerCase();
+
+                var par = $(this).parent('.attachment');
+                par.find('.fileInfo').remove();
+                par.find('.attach-view').removeClass('d-none');
+
+                par.append('<div class="fileInfo fs-8"><span class="text-primary">File Name:</span> ' + fName + '. <span class="ms-2 text-primary">File Size:</span> ' + fSize + '. </div>');
+                /**/
+
+                var clone = $(this).clone();
+                $('form#attachmentUpload').html('');
+                $('form#attachmentUpload').append('<input type="hidden" id="type" name="type" value="message" />');
+                $('form#attachmentUpload').append('<input type="hidden" id="file_type" name="file_type" value="' + par.find('[type="file"]').attr('name') + '" />');
+                $('form#attachmentUpload').append(clone);
+                $('form#attachmentUpload').find('[type="file"]').attr('name', 'upload_file');
+
+                var fileId="";
+                $('form#attachmentUpload').ajaxSubmit({
+                    beforeSubmit: function () {
+                        par.append('<div class="uploadLoading"><div></div></div>');
+                    },
+                    uploadProgress: function (event, position, total, percentComplete) {
+                        par.find('.uploadLoading div').css({'width': percentComplete + '%'});
+                    },
+                    success: function (data) {
+                        data = JSON.parse(data);
+                        if (data['status'] == 'success') {
+                            if(data['fid']!=""){
+                                fileId=data['fid'];
+                                par.find('[type="hidden"]').remove();
+                                par.append('<input type="hidden" class="att-picture" name="attachments[]" value="' + data['fid'] + '" />');
+                                par.find('.uploadLoading').remove();
+                            }
+                        } else {
+                            par.find('.uploadLoading').remove();
+                            par.find('.fileInfo').html("");
+                            par.find('.attach-view').remove();
+                            alert(data['message']);
+                        }
+                    },
+                    resetForm: true
+                });
+                e.stopImmediatePropagation();
+            });
+
+
+        }
+        attachmentFunction();
+        $('.fas.fa-trash').on('click',function(){
+            $(this).parents('.attachment').remove();
+        });
+    }else if($('#attachments').length && !$('form#application-form').length){
+        var i = 0;
+        $('.attachment').each(function(){
+            $(this).find('[type="file"]').remove();
+            if(attachments[i]!==undefined && attachments[i]!==null ){
+                // $(this).append('<a href="'+baseUrl+'attachment?fid='+attachments[i]+'"><i class="fas fa-download upload-but text-info"></i></a>');
+                $(this).append('<i class="fas fa-download text-info"></i><input type="hidden" class="att-picture-download" value="'+attachments[i]+'" />');
+            }
+            i = i + 1;
+        });
+    }
+
+    $('.attachment .fa-download').on('click', function () {
+        var p = $(this).parent('.attachment');
+        var v = '';
+        if(p.find('.att-picture').length)
+            v = p.find('.att-picture').val();//p.find('.att-picture-download').val();
+        else if(p.find('.att-picture-download').length)
+            v = p.find('.att-picture-download').val();
+        console.log(baseUrl+'attachment?fid=' + v);
+        window.open(baseUrl+'attachment?fid=' + v + '', '_blank');
+    });
+    /*Service Form*/
+
+    /*Application AutoFill*/
+
+    if(appData!=''){
+        var canvas = '';
+        var ctx = '';
+        var image = '';
+        $.when(
+            $.each(appData, function(i,v) {
+
+                if ($.isArray(v)) {
+                    var ele = $('[name="' + i + '[]"]');
+                    ele.each(function(){
+                        if($.inArray($(this).val(),v)>=0)
+                            $(this).attr('checked', 'checked');
+                    });
+                } else {
+                    var ele = $('[name="' + i + '"]');
+                    if (ele.prop('tagName') == 'INPUT') {
+
+                        if (ele.attr('type') == 'checkbox') {
+                            ele.attr('checked', 'checked');
+                        }else if (ele.attr('type') == 'radio') {
+                            ele.each(function () {
+                                if ($(this).val() == v)
+                                    $(this).attr('checked', 'checked');
+                            });
+                        }else if (ele.attr('type') == 'hidden') {
+                            if(i.indexOf("dsignature") > -1){
+                                canvas = document.getElementById(i);
+                                ctx = canvas.getContext("2d");
+                                image = new Image();
+                                image.onload = function() {
+                                    ctx.drawImage(image, 0, 0);
+                                };
+                                image.src = v;
+                                ele.val(v);
+                            }
+                        }else
+                            ele.val(v);
+
+                    } else if (ele.prop('tagName') == 'SELECT') {
+                        ele.find('option[value="' + v + '"]').attr('selected', 'selected');
+                        var dataType = '';
+                        if(v === undefined || v === null){
+
+                        }else {
+                            dataType = v.replace(/\d+/g, '');
+                            ele.attr('data-type',dataType);
+                            ele.attr('data',v.replace(dataType,''));
+                        }
+                    } else if (ele.prop('tagName') == 'TEXTAREA') {
+                        ele.html(v);
+                    }
+                }
+            })).then(function(){ /*$("select").select2(); loadDistrict();*/ });
+    }
+    /*Application AutoFill*/
+    /* add more form data*/
+    $('.table[table-auto-rows="true"]').each(function(){
+        $(this).parent('div.table-responsive').append('<span class="add-more-row"><button class="btn btn-success"><i class="fa fa-plus pe-2"></i>Add More</button></span>');
+
+        $(this).parent('div.table-responsive').append('<span class="remove-last-row ms-2"><button class="btn btn-danger"><i class="fa fa-minus pe-2"></i>Remove</button></span>');
+        var i=0;
+        $('.table tbody [obd="tr"]').each(function(){
+            var d = 0;
+            $(this).find('td input, td select, td textarea').each(function(){
+                if($(this).val()!='')
+                    d = 1;
+            });
+            if(d==0) {
+                $(this).find('td label').each(function () {
+                    $('.add-more-row').hide();
+                    $('.remove-last-row').hide();
+                    if ($(this).text() != '')
+                        d = 1;
+                });
+            }
+
+            if (d == 0 && i != 0)
+                $(this).hide();
+
+            i = i + 1;
+        });
+
+        $('.add-more-row').on('click',function(){
+            var par = $(this).parent('div.table-responsive');
+            var getMaxRowVal = par.find('.table[table-auto-rows="true"]').attr('table-max-rows');
+            var getCurrentRowVal =par.find('.table tbody tr:visible:last').attr('obd-tr');
+            var incNum = parseInt(getCurrentRowVal) + 1;
+            if(parseInt(getCurrentRowVal) <= parseInt(getMaxRowVal)) {
+                par.find(".table tbody tr:nth-child("+incNum+")").show();
+            }
+        });
+        $('.remove-last-row').on('click',function(){
+            var par = $(this).parent('div.table-responsive');
+            if($('.table[table-auto-rows="true"] tbody tr:visible').length > 1) {
+                par.find('table tbody tr:visible:last').css("display","none").find('input, select, textarea').val('');
+            }
+        });
+    });
+
+    /*add more form data end*/
+
+    /*Search Service Home Page*/
+    // $('.home-doptor-list').hide();
+    if($('.home-service-type').is(':visible')){
+        $('.home-service-type').on('click',function(){
+            $('.home-service-list').html('');
+            $("#home-service-list-title").addClass('d-none');
+            $('.sector-type').removeClass('text-success');
+            $('.sector-type-item').removeClass('active');
+            if($(this).hasAttr('data-type')){
+                if($(this).attr('data-type')=="sector"){
+                    $('.office-type').removeClass('text-success');
+                    $('.sector-type').addClass('text-success');
+                    $("#home-service-list-title").removeClass('d-none');
+                }else if($(this).attr('data-type')=="recipient"){
+                    $('.office-type').removeClass('text-success');
+                    $('.sector-type').removeClass('text-success');
+                    $('.recipient-type').addClass('text-success');
+                    $("#home-service-list-title").addClass('d-none');
+                }
+            }
+            if($(this).hasClass('home-doptor-service')){
+                $(".home-doptor-list").addClass('d-none');
+                $('.sector-type').removeClass('text-success');
+                $('.recipient-type').removeClass('text-success');
+                $('.office-type').addClass('text-success');
+                $('.home-doptor-list').hide();
+            }else{
+                $('.office-type').removeClass('text-success');
+                $(".home-doptor-list").addClass('d-none');
+                $('.home-doptor-list').hide();
+            }
+        });
+    }
+
+    if($('.home-search-service').is(':visible')){
+		$(".home-search-service").keyup(function(event) {
+			if (event.keyCode === 13) {
+				$(this).click();
+			}
+		});
+
+		$('.doptor-layer-item').click(function(){
+			$('#InputToFocus').focus();
+		});
+		$('.sector-type-item').click(function(){
+			$('.service-list-search-input').focus();
+		});
+		$('.recipient-type-item').click(function(){
+			$('.service-list-search-input').focus();
+		});
+
+		$(".circle-left-backtocabin").keyup(function(event) {
+			if (event.keyCode === 13) {
+				$(this).click();
+			}
+		});
+		
+        $('.home-search-service').on('click',function(){
+			$('.home-service-list').focus();
+            $(".home-search-service").removeClass('active');
+            $(this).addClass('active');
+            $('.office-type').removeClass('text-success');
+            $('.recipient-type').removeClass('text-success');
+            $('.sector-type').addClass('text-success');
+            $("#home-service-list-title").removeClass('d-none');
+            var url = '';
+            var checkDataType = '';
+            if($(this).hasAttr('data-type')){
+                if($(this).attr('data-type')=="recipient") {
+                    $('.office-type').removeClass('text-success');
+                    $('.sector-type').removeClass('text-success');
+                    $('.recipient-type').addClass('text-success');
+                    $("#home-service-list-title").html('সেবা খাত অনুসারে সেবা');    //TODO: Translate
+                }
+                if($(this).attr('data-type')=="sector") {
+                    $('.office-type').removeClass('text-success');
+                    $('.recipient-type').removeClass('text-success');
+                    $('.sector-type').addClass('text-success');
+                    $("#home-service-list-title").html('সেবা খাত অনুসারে সেবা'); //TODO: Translate
+                }
+                if($(this).attr('data-type')=="doptor-layer") {
+                    $('.office-type').addClass('text-success');
+                    $('.recipient-type').removeClass('text-success');
+                    $('.sector-type').removeClass('text-success');
+                    $("#home-service-list-title").html('দপ্তর অনুসারে সেবা'); //TODO: Translate
+                    checkDataType = 'doptor-layer';
+                }
+                $('.home-doptor-list').hide();
+                if($(this).attr('data-type')=="doptor-layer") {
+                    url = baseUrl + 'services/doptorLayers?category='+$(this).attr('data-type')+'&data='+$(this).attr('data-id');    
+                }
+                else {
+                    url = baseUrl + 'services/homeServiceList?category='+$(this).attr('data-type')+'&data=service-'+$(this).attr('data-type')+'-'+$(this).attr('data-id'); 
+                }
+                
+            }else{
+                if($('[name="office_id"]').val().length != ''){
+                    url = baseUrl + 'services/homeServiceList?category=office&officeid='+$('[name="office_id"]').val();
+                }
+            }
+
+            if(url!=''){
+                $.ajax({
+                    type: 'POST',
+                    url: url,
+                    beforeSend: function () {
+                        $('.home-service-list').html('<div class="text-center p-4"><div class="text-center"><i class="fa fa-spin fa-spinner text-danger"></i></div>লোডিং...</div>');//TODO: Translate
+                    },
+                    success: function (data) {
+                        // console.log(data);
+                        $('.home-service-list').html(data);
+                        serviceListSearch();
+
+                        // $('html, body').animate({
+                        //     scrollTop: $('.home-service-list').offset().top
+                        // }, 2000);
+                    }
+                });
+            }
+        });
+    }
+    /*Search Service Home Page*/
+
+    var hash = window.location.hash;
+    if(hash=='#print'){
+        var pri = $('.printable').clone();
+        pri.find('.noprint').remove();
+        $('.wrapper').html(pri.html());
+        window.print();
+    }
+
+    /* ----------------------------- Added by Harun ----------------------------- */
+    $(".micro-phone").click(function(){
+        $('.micro-phone').addClass('d-none');
+        $('.micro-phone-mute').removeClass('d-none');
+    });
+    $(".micro-phone-mute").click(function(){
+        $('.micro-phone-mute').addClass('d-none');
+        $('.micro-phone').removeClass('d-none');
+    });
+    $('#applicant_mobile_no').on('input', function (event) { 
+        this.value = this.value.replace(/[^0-9]/g, '');
+    });
+    $('[name=feedback_data]').click(function(){
+        // alert($(this).val());
+        $("#feedback_submit_btn").removeClass('btn-secondary');
+        $("#feedback_submit_btn").addClass('btn-success');
+    });
+    $('#mobile').on('input', function (event) { 
+        this.value = this.value.replace(/[^0-9]/g, '');
+    });
+
+    var options = {
+        url: baseUrl+"cache/service/search_service.json",
+        getValue: "name",
+        list: {
+            match: {
+                enabled: true
+            },
+            maxNumberOfElements: 6,
+
+            showAnimation: {
+                type: "slide",
+                time: 300
+            },
+            hideAnimation: {
+                type: "slide",
+                time: 300
+            },
+            onChooseEvent: function () {
+                gotoSearchPage();
+            }
+        },
+        theme: "round"
+    };
+    // console.log(options);
+    $("#home_search_text_box,#inside_search_text_box").easyAutocomplete(options);
+    function gotoSearchPage() {
+        if ($('form#home-search-service').length)
+            $('form#home-search-service').submit();
+        else if ($('form#search-service').length)
+            $('form#search-service').submit();
+    }
+
+    $(".show-password").on("click", function () {
+        if ($(this).hasClass("fa-eye")) {
+            $(this).removeClass("fa-eye");
+            $(this).addClass("fa-eye-slash");
+            $(this).parent(".my-form-group").find("input").attr("type", "text");
+        } else {
+            $(this).addClass("fa-eye");
+            $(this).removeClass("fa-eye-slash");
+            $(this).parent(".my-form-group").find("input").attr("type", "password");
+        }
+    });
+});
+
+function hideDiv(obj) {
+    $(obj).hide();
+}
+
+function messageModal(resultData) {
+    $("#message_modal_title").html(resultData.title);
+    $("#message_modal_body").html("<div class='alert " +
+        resultData.alert_type + "' role='alert'> " + resultData.message + "</div>");
+    $("#message_modal").modal("show");
+}
+
+function hideMessageModal(){
+    $("#message_modal").modal("hide");
+}
+
+function errorModal(error) {
+    $("#message_modal_title").html("ত্রুটি");//TODO: Translate
+    $("#message_modal_body").html("");
+    //var errorData=JSON.parse(error.responseText);
+    var errorData = error.responseJSON;
+
+    if(errorData.message=="The given data was invalid."){
+        errorData.message="আপনার তথ্য টি সঠিক নয় ।";//TODO: Translate
+    }
+
+    var error_body = '<div class="alert alert-danger py-1 px-2" role="alert">${errorData.message}</div>';
+    for (r in errorData.errors) {
+        // console.log(errorData.errors[r][0]);
+        error_body += '<div class="alert alert-danger py-1 px-2" role="alert">${errorData.errors[r][0]}</div>';
+    }
+    $("#message_modal_body").html(error_body);
+    $("#message_modal").modal("show");
+
+    
+}
+
+
+
+
+
+

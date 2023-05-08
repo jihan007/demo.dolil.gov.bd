@@ -1,0 +1,95 @@
+const baseUrlLocker = 'https://mylocker.live.mygov.bd/embed?citizenId='
+// const baseUrl = 'https://mylocker.test/embed?citizenId='
+function createElement(el) {
+    return document.createElement(el);
+}
+
+function myLockerSelector(selector) {
+    return document.querySelector(selector);
+}
+
+function myLockerSelectorAll(selector) {
+    return document.querySelectorAll(selector);
+}
+
+function getDataRaw(mylockerPicker) {
+    var dataString = mylockerPicker.getAttribute('x-mlokcer')
+    return eval('(' + dataString + ')')
+}
+
+function createModel(data) {
+    const isExist = myLockerSelector('.mylocker-modal-bg')
+    if(isExist){
+        isExist.parentNode.removeChild(isExist)
+    }
+    const container = createElement('div');
+    container.className = 'model-bg mylocker-modal-bg'
+    const modalContainer = createElement('div')
+    modalContainer.className = 'modalContainer mylocker-modal-container'
+    var iframe = createIframe(data)
+    modalContainer.appendChild(iframe)
+    container.appendChild(modalContainer)
+    document.body.appendChild(container)
+}
+
+function appCss() {
+    const style = createElement('link')
+    style.rel = 'stylesheet'
+    style.href = 'https://mylocker.live.mygov.bd/css/modal.css'
+    document.head.appendChild(style)
+}
+
+function createIframe(data) {
+    const iframe = createElement('iframe')
+    // iframe.setAttribute("src", baseUrlLocker + data.citizen_id +'&isShowAttachButton='+data.showAttachButton);
+    iframe.setAttribute("src", baseUrlLocker + data.citizen_id + '&isShowAttachButton=' + data.showAttachButton + '&domain='+window.location.hostname);
+    iframe.id = "mylockerIframe"
+    iframe.className = 'mylocker-iframe'
+    iframe.frameBorder = '0'
+    return iframe;
+}
+
+function initMyLocker() {
+    appCss()
+    prepareModal();
+}
+
+initMyLocker();
+
+function listenerWindow(data) {
+    window.addEventListener('message', function (e) {
+        var action = e.data
+        console.log(action)
+        if (action && action.selected === false) {
+            hideModel()
+        }
+        if (action && (action.selected === true)) {
+            var input = myLockerSelector(data.input)
+            input.value = action.file.url;
+            if(action.isClosed === true){
+                hideModel()
+            }
+        }
+    }, false)
+
+}
+
+
+function prepareModal() {
+    const mylockerPickers = myLockerSelectorAll('.mylocker-picker')
+    mylockerPickers.forEach(function (mylockerPicker) {
+        mylockerPicker.addEventListener('click', function (e) {
+            var data = getDataRaw(e.target)
+            createModel(data)
+            listenerWindow(data)
+        })
+    })
+
+}
+
+function hideModel() {
+    const modelBg = myLockerSelector('.model-bg')
+    modelBg.classList.add('mylocker-model-hide')
+    modelBg.classList.remove('mylocker-modal-index');
+
+}

@@ -1,0 +1,65 @@
+let widget = `<span class="sso-icon" id="mygov-sso-handle">
+                    <img src="https://beta-idp.stage.mygov.bd/img/widget-round.png">
+                </span>
+                <div id="mygov-sso-box" class="apps-icon" style="display: none;">
+                    <ul id="getDynamicWidgets"></ul>
+                </div>`;
+
+// Make a request for a user with a given access token
+fetch("https://beta-idp.stage.mygov.bd/api/mygov-widgets", {
+    method: "GET",
+    headers: {
+        Accept: "application/json",
+        Authorization: "Bearer " + token,
+        Widget: widgets_id,
+    },
+})
+    .then((response) => response.json())
+    .then((data) => {
+        let oidcClients = data.clients;
+
+        let innerWidgets = "";
+
+        oidcClients.map((item) => {
+            innerWidgets += `<li>
+            <a href="${item.url ? item.url : `#`}" target="_blank">
+                <div class="app-info">
+                    <div class="app-logo">
+                    ${
+                        item.logo
+                            ? `<img src="${item.logo}" class="img-fluid">`
+                            : item.name
+                    }
+                        
+                    </div>
+                </div>
+            </a>
+        </li>`;
+        });
+
+        document.getElementById("getDynamicWidgets").innerHTML = innerWidgets;
+    })
+    .catch((e) => {
+        // Handle Errors
+        document.getElementById(
+            "getDynamicWidgets"
+        ).innerHTML = `<b>Processing ...</b>`;
+    });
+
+document.getElementById("mygov-sso-widget").innerHTML = widget;
+
+/***Toggled for Widgest Button**/
+document.getElementById("mygov-sso-handle").addEventListener("click", (e) => {
+    let x = document.getElementById("mygov-sso-box");
+    if (x.style.display === "none") {
+        x.style.display = "block";
+    } else {
+        x.style.display = "none";
+    }
+    e.stopPropagation();
+});
+
+/***Hide Elements after click any dom***/
+document.addEventListener("click", function () {
+    document.getElementById("mygov-sso-box").style.display = "none";
+});

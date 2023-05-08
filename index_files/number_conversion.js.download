@@ -1,0 +1,60 @@
+var numbersEtoB = {
+    '0': '০',
+    '1': '১',
+    '2': '২',
+    '3': '৩',
+    '4': '৪',
+    '5': '৫',
+    '6': '৬',
+    '7': '৭',
+    '8': '৮',
+    '9': '৯'
+};
+
+function replaceNumbersEtoB(input) {
+    var output = [];
+    for (var i = 0; i < input.length; ++i) {
+        if (numbersEtoB.hasOwnProperty(input[i])) {
+            output.push(numbersEtoB[input[i]]);
+        } else {
+            output.push(input[i]);
+        }
+    }
+    return output.join('');
+}
+
+var numbersBtoE = {
+    '০': 0,
+    '১': 1,
+    '২': 2,
+    '৩': 3,
+    '৪': 4,
+    '৫': 5,
+    '৬': 6,
+    '৭': 7,
+    '৮': 8,
+    '৯': 9
+};
+
+function replaceNumbersBtoE(input) {
+    var output = [];
+    for (var i = 0; i < input.length; ++i) {
+        if (numbersBtoE.hasOwnProperty(input[i])) {
+            output.push(numbersBtoE[input[i]]);
+        } else {
+            output.push(input[i]);
+        }
+    }
+    return output.join('');
+}
+
+
+var finalEnlishToBanglaNumber = { '0': '০', '1': '১', '2': '২', '3': '৩', '4': '৪', '5': '৫', '6': '৬', '7': '৭', '8': '৮', '9': '৯' };
+
+String.prototype.getDigitBanglaFromEnglish = function() {
+    var retStr = this;
+    for (var x in finalEnlishToBanglaNumber) {
+        retStr = retStr.replace(new RegExp(x, 'g'), finalEnlishToBanglaNumber[x]);
+    }
+    return retStr;
+};

@@ -1,0 +1,31 @@
+function divShowHide(toggle_div_id, icon_div_id) {
+    // console.log($("#" + icon_div_id).html());
+    $("#" + toggle_div_id).toggle('slow');
+
+    if($("#" + icon_div_id).html().indexOf('<i class="fas fa-chevron-up"></i>') != -1){
+        $("#" + icon_div_id).html('<i class="fas fa-chevron-down"></i>');
+    }else{
+        $("#" + icon_div_id).html('<i class="fas fa-chevron-up"></i>');
+    }
+}
+
+$(document).ready(function () {
+    var i=0;
+    for(i=2;i<8;i++){
+        if(i!=7)
+            $("#commonly_asked_div_"+i).toggle('slow');
+    }
+
+    // $('.chat_korun').on('click', function() {
+    //     if($('.chat_korun').html().indexOf('<i class="fas fa-chevron-right"></i>') != -1){
+    //         var iFrameDOM = $("iframe#chatbox").contents();
+	//         iFrameDOM.find("#widget").css('display','none');  
+    //         iFrameDOM.find("#profile_div").css('display','block');  
+    //     }
+    //     else {    
+    //         var iFrameDOM = $("iframe#chatbox").contents();
+    //         iFrameDOM.find("#profile_div").css('display','none'); 
+    //         iFrameDOM.find("#widget").css('display','block'); 
+    //     }    
+    // });
+});

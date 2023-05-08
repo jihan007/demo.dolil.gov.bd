@@ -1,0 +1,29 @@
+/**
+ * Created by Md. Munir Hossain on 06/06/2021.
+ */
+jQuery(document).ready(function(){
+
+    // $('#application-form .to_whom').removeClass('to_whom').addClass('to-whom');
+    // $('#application-form .office_name').removeClass('office_name').addClass('office-name');
+    // $('#application-form .office_address').removeClass('office_address').addClass('office-address');
+
+    $('#new_office_layer_office').on('change',function(){
+        var officeName = $('#new_office_layer_office option:selected').text();
+
+        if($('#application-form .to_whom').hasAttr('data-auto')==true){
+            /*if($('#deskSelectionModal').length){
+                $('#deskSelectionModal').modal('show',{
+                    backdrop: 'static',
+                    keyboard: false
+                });
+            }*/
+        }
+
+        if($('#application-form .office_name').hasAttr('data-auto')==true){
+            $('#application-form .office_name').html(officeName);
+            $('#application-form').find('[name="auto_office_name"]').val(officeName);
+        }else{
+            $('#application-form').find('[name="auto_office_name"]').val('');
+        }
+    });
+});

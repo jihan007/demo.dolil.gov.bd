@@ -1,0 +1,303 @@
+jQuery(document).ready(function(){
+
+    function loadDivisionIns() {
+        if ($('.geo_division_id_ins').length) {
+            $.ajax({
+                type: 'GET',
+                datType: 'json',
+                url: baseUrl + 'geo/insDivision?ins_type=' + ($('input[name="ins_type"]').is(':visible') ? $('input[name="ins_type"]:checked').val() : ''),
+                beforeSend: function() {},
+                success: function(data) {
+                    data = JSON.parse(data);
+                    var items = [];
+                    items.push('<option value="">Division </option>');
+                    var j = 1;
+                    $.each(data, function(i, v) {
+                        if (parseInt(v['bbsCode']) > 0)
+                            items.push('<option value="' + v['nameBn'] + '" data-id="' + v['id'] + '">' + v['nameBn'] + '</option>');
+                        j = j + 1;
+                    });
+                    $('.geo_division_id_ins').html('');
+                    $('.geo_district_id_ins').html('');
+                    $('.geo_upazilla_id_ins').html('');
+                    $('.geo_institutions_id').html('');
+                    $('.geo_eiin_id').val('');
+                    $('.geo_institutions_madrasah_id').html('');
+                    $('.geo_eiin_madrasah_id').val('');
+                    $('.geo_institute_type').val('');
+                    $('.geo_division_id_ins').html(items.join(''));
+                }
+            });
+        }
+    }
+    loadDivisionIns();
+
+    function loadDistrictIns(v, ele) {
+        if ($('.geo_district_id_ins').length) {
+
+            $.ajax({
+                type: 'GET',
+                datType: 'json',
+                url: baseUrl + 'geo/insDistrict?division=' + v + '&ins_type=' + ($('input[name="ins_type"]').is(':visible') ? $('input[name="ins_type"]:checked').val() : ''),
+                beforeSend: function() {},
+                success: function(data) {
+                    data = JSON.parse(data);
+                    var items = [];
+                    items.push('<option value="">District </option>');
+                    var j = 1;
+                    $.each(data, function(i, v) {
+                        if (parseInt(v['bbsCode']) > 0)
+                            items.push('<option value="' + v['nameBn'] + '" data-id="' + v['id'] + '">' + v['nameBn'] + '</option>');
+                        j = j + 1;
+                    });
+
+                    $('.geo_district_id_ins').html('');
+                    $('.geo_upazilla_id_ins').html('');
+                    $('.geo_institutions_id').html('');
+                    $('.geo_eiin_id').val('');
+                    $('.geo_institute_type').val('');
+                    $('.geo_institutions_madrasah_id').html('');
+                    $('.geo_eiin_madrasah_id').val('');
+                    $('.geo_district_id_ins').html(items.join(''));
+                }
+            });
+        }
+    }
+    $('.geo_division_id_ins').on('change', function() {
+        if ($(this).val() != '') {
+            var sel = $(this).find('option[value="' + $(this).val() + '"]').html();
+            $('#application-form').find('input[name="' + $(this).attr('name') + '"]').remove();
+            $('#application-form').append('<input type="hidden" name="' + $(this).attr('name') + '" value="' + sel + '"/>');
+            loadDistrictIns($(this).find('option[value="' + $(this).val() + '"]').attr('data-id'), $(this));
+        }
+    });
+
+    function loadUpazilaIns(v, ele) {
+        if ($('.geo_upazilla_id_ins').length) {
+
+            $.ajax({
+                type: 'GET',
+                datType: 'json',
+                url: baseUrl + 'geo/insUpazila?district=' + v + '&ins_type=' + ($('input[name="ins_type"]').is(':visible') ? $('input[name="ins_type"]:checked').val() : ''),
+                beforeSend: function() {},
+                success: function(data) {
+                    data = JSON.parse(data);
+                    var items = [];
+                    items.push('<option value="">Upazila </option>');
+                    var j = 1;
+                    $.each(data, function(i, v) {
+                        if (parseInt(v['bbsCode']) > 0)
+                            items.push('<option value="' + v['nameBn'] + '" data-id="' + v['id'] + '">' + v['nameBn'] + '</option>');
+                        j = j + 1;
+                    });
+
+                    $('.geo_upazilla_id_ins').html('');
+                    $('.geo_institutions_id').html('');
+                    $('.geo_eiin_id').val('');
+                    $('.geo_institutions_madrasah_id').html('');
+                    $('.geo_eiin_madrasah_id').val('');
+                    $('.geo_institute_type').val('');
+                    $('.geo_upazilla_id_ins').html(items.join(''));
+                }
+            });
+        }
+    }
+    $('.geo_district_id_ins').on('change', function() {
+        if ($(this).val() != '') {
+            var sel = $(this).find('option[value="' + $(this).val() + '"]').html();
+            $('#application-form').find('input[name="' + $(this).attr('name') + '"]').remove();
+            $('#application-form').append('<input type="hidden" name="' + $(this).attr('name') + '" value="' + sel + '"/>');
+            loadUpazilaIns($(this).find('option[value="' + $(this).val() + '"]').attr('data-id'), $(this));
+        }
+    });
+
+    $('.geo_upazilla_id_ins').on('change', function() {
+        if ($(this).val() != '') {
+            if ($('input[name="ins_type"]:checked').val() == 'কারিগরি') {
+                loadInstitutionsTechnical($(this).find('option[value="' + $(this).val() + '"]').attr('data-id'), $(this));
+            } else if ($('input[name="ins_type"]:checked').val() == 'মাদ্রাসা') {
+                loadInstitutionsMadrasah($(this).find('option[value="' + $(this).val() + '"]').attr('data-id'), $(this));
+            } else {
+                loadInstitutions($(this).find('option[value="' + $(this).val() + '"]').attr('data-id'), $(this));
+            }
+        }
+    });
+
+    function loadInstitutions(v, ele) {
+        if ($('.geo_institutions_id').length) {
+            var division_id = $('.geo_division_id_ins').find(":selected").attr('data-id');
+            var district_id = $('.geo_district_id_ins').find(":selected").attr('data-id');
+            var upzila_id = $('.geo_upazilla_id_ins').find(":selected").attr('data-id');
+
+            $.ajax({
+                type: 'GET',
+                dataType: 'json',
+                url: baseUrl + 'geo/institutions?division_id=' + division_id + '&district_id=' + district_id + '&upzila_id=' + upzila_id,
+                beforeSend: function() {},
+                success: function(data) {
+                    var items = [];
+                    items.push('<option value="">প্রতিষ্ঠান </option>');
+                    var j = 1;
+                    $.each(data, function(i, v) {
+                        items.push('<option value="' + v['institute_name'] + '" data-id="' + v['id'] + '">' + v['institute_name'] + '</option>');
+                        j = j + 1;
+                    });
+
+                    $('.geo_institutions_id').html('');
+                    $('.geo_eiin_id').val('');
+                    $('.geo_institute_type').val('');
+                    $('.geo_institutions_id').html(items.join(''));
+                }
+            });
+        }
+    }
+
+    $('.geo_institutions_id').on('change', function() {
+        if ($(this).val() != '') {
+            var sel = $(this).find('option[value="' + $(this).val() + '"]').html();
+            $('#application-form').find('input[name="' + $(this).attr('name') + '"]').remove();
+            $('#application-form').append('<input type="hidden" name="' + $(this).attr('name') + '" value="' + sel + '"/>');
+            loadEiin($(this).find('option[value="' + $(this).val() + '"]').attr('data-id'), $(this));
+        }
+    });
+
+    function loadInstitutionsMadrasah(v, ele) {
+        if ($('.geo_institutions_madrasah_id').length) {
+            var division_id = $('.geo_division_id_ins').find(":selected").attr('data-id');
+            var district_id = $('.geo_district_id_ins').find(":selected").attr('data-id');
+            var upzila_id = $('.geo_upazilla_id_ins').find(":selected").attr('data-id');
+
+            $.ajax({
+                type: 'GET',
+                dataType: 'json',
+                url: baseUrl + 'geo/institutions_madrasah?division_id=' + division_id + '&district_id=' + district_id + '&upzila_id=' + upzila_id,
+                beforeSend: function() {},
+                success: function(data) {
+                    var items = [];
+                    items.push('<option value="">প্রতিষ্ঠান </option>');
+                    var j = 1;
+                    $.each(data, function(i, v) {
+                        items.push('<option value="' + v['institute_name'] + '" data-id="' + v['id'] + '">' + v['institute_name'] + '</option>');
+                        j = j + 1;
+                    });
+
+                    $('.geo_institutions_madrasah_id').html('');
+                    $('.geo_eiin_madrasah_id').val('');
+                    $('.geo_institutions_madrasah_id').html(items.join(''));
+                }
+            });
+        }
+    }
+
+    function loadInstitutionsTechnical(v, ele) {
+        if ($('.geo_institutions_madrasah_id').length) {
+            var division_id = $('.geo_division_id_ins').find(":selected").attr('data-id');
+            var district_id = $('.geo_district_id_ins').find(":selected").attr('data-id');
+            var upzila_id = $('.geo_upazilla_id_ins').find(":selected").attr('data-id');
+
+            $.ajax({
+                type: 'GET',
+                dataType: 'json',
+                url: baseUrl + 'geo/institutions_technical?division_id=' + division_id + '&district_id=' + district_id + '&upzila_id=' + upzila_id,
+                beforeSend: function() {},
+                success: function(data) {
+                    var items = [];
+                    items.push('<option value="">প্রতিষ্ঠান </option>');
+                    var j = 1;
+                    $.each(data, function(i, v) {
+                        items.push('<option value="' + v['institute_name'] + '" data-id="' + v['id'] + '">' + v['institute_name'] + '</option>');
+                        j = j + 1;
+                    });
+
+                    $('.geo_institutions_madrasah_id').html('');
+                    $('.geo_eiin_madrasah_id').val('');
+                    $('.geo_institutions_madrasah_id').html(items.join(''));
+                }
+            });
+        }
+    }
+
+    $('.geo_institutions_madrasah_id').on('change', function() {
+        if ($(this).val() != '') {
+            var sel = $(this).find('option[value="' + $(this).val() + '"]').html();
+            $('#application-form').find('input[name="' + $(this).attr('name') + '"]').remove();
+            $('#application-form').append('<input type="hidden" name="' + $(this).attr('name') + '" value="' + sel + '"/>');
+
+            if ($('input[name="ins_type"]:checked').val() == 'কারিগরি') {
+                loadTechnicalEiin($(this).find('option[value="' + $(this).val() + '"]').attr('data-id'), $(this));
+            } else if ($('input[name="ins_type"]:checked').val() == 'মাদ্রাসা') {
+                loadMadrasahEiin($(this).find('option[value="' + $(this).val() + '"]').attr('data-id'), $(this));
+            }
+            
+        }
+    });
+
+    function loadEiin(v, ele) {
+        if ($('.geo_eiin_id').length) {
+            var division_id = $('.geo_division_id_ins').find(":selected").attr('data-id');
+            var district_id = $('.geo_district_id_ins').find(":selected").attr('data-id');
+            var upzila_id = $('.geo_upazilla_id_ins').find(":selected").attr('data-id');
+
+            $.ajax({
+                type: 'GET',
+                dataType: 'json',
+                url: baseUrl + 'geo/eiin?id=' + v,
+                beforeSend: function() {},
+                success: function(data) {
+                    $('.geo_eiin_id').val('');
+                    $('.geo_eiin_id').val(data[0]['eiin']);
+                    $('.geo_institute_type').val(data[0]['institute_type']);
+                }
+            });
+        }
+    }
+
+    function loadMadrasahEiin(v, ele) {
+        if ($('.geo_eiin_madrasah_id').length) {
+            var division_id = $('.geo_division_id_ins').find(":selected").attr('data-id');
+            var district_id = $('.geo_district_id_ins').find(":selected").attr('data-id');
+            var upzila_id = $('.geo_upazilla_id_ins').find(":selected").attr('data-id');
+
+            $.ajax({
+                type: 'GET',
+                dataType: 'json',
+                url: baseUrl + 'geo/eiin_madrasah?id=' + v,
+                beforeSend: function() {},
+                success: function(data) {
+                    $('.geo_eiin_madrasah_id').val('');
+                    $('.geo_eiin_madrasah_id').val(data[0]['eiin']);
+                }
+            });
+        }
+    }
+
+    function loadTechnicalEiin(v, ele) {
+        if ($('.geo_eiin_madrasah_id').length) {
+            var division_id = $('.geo_division_id_ins').find(":selected").attr('data-id');
+            var district_id = $('.geo_district_id_ins').find(":selected").attr('data-id');
+            var upzila_id = $('.geo_upazilla_id_ins').find(":selected").attr('data-id');
+
+            $.ajax({
+                type: 'GET',
+                dataType: 'json',
+                url: baseUrl + 'geo/eiin_technical?id=' + v,
+                beforeSend: function() {},
+                success: function(data) {
+                    $('.geo_eiin_madrasah_id').val('');
+                    $('.geo_eiin_madrasah_id').val(data[0]['eiin']);
+                }
+            });
+        }
+    }
+
+    $('input[name="ins_type"]').on('click', function() {
+        $('.geo_division_id_ins').html('');
+        $('.geo_district_id_ins').html('');
+        $('.geo_upazilla_id_ins').html('');
+        $('.geo_institutions_id').html('');
+        $('.geo_eiin_id').val('');
+        $('.geo_institutions_madrasah_id').html('');
+        $('.geo_eiin_madrasah_id').val('');
+    loadDivisionIns();
+    });
+});

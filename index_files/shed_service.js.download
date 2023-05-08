@@ -1,0 +1,509 @@
+$(document).ready(function() {
+
+    // var getSerViceUrl = window.location.href;
+	// if(getSerViceUrl == 'https://www.mygov.bd/service/?id=BDGS-1611115830') {
+	// 	$(".service-required-docs:first-child").find('span').remove();
+	// 	$(".service-required-docs:nth-child(3)").find('span').remove();
+	// }
+
+ //    if(getSerViceUrl == 'https://www.mygov.bd/service/?id=BDGS-1611120463') {
+	// 	$(".service-required-docs:first-child").find('span').remove();
+	// }
+
+	$('input:radio[name="ins_type"]').change(function(){
+		$("#instituteType").val('').trigger('change');
+        	if ($(this).is(':checked') && $(this).val() == 'কারিগরি') {
+        		$("#instituteType").html('<option value="">নির্বাচন করুণ</option><option value="এসএসসি (ভোক) ও দাখিল ভোক)">এসএসসি (ভোক) ও দাখিল ভোক)</option><option value="টেকনিক্যাল স্কুল এন্ড কলেজ (টিএসসি)">টেকনিক্যাল স্কুল এন্ড কলেজ (টিএসসি)</option><option value="এইস.এস.সি (বিএম) ও ডিপ্লোমা ইন কমার্স">এইস.এস.সি (বিএম) ও ডিপ্লোমা ইন কমার্স</option><option value="ডিপ্লোমা">ডিপ্লোমা</option><option value="ইঞ্জিনিয়ারিং কলেজ">ইঞ্জিনিয়ারিং কলেজ</option>');	  
+        	}
+        	else if ($(this).is(':checked') && $(this).val() == 'মাদ্রাসা') {
+        		$("#instituteType").html('<option value="">নির্বাচন করুণ</option><option value="এবতেদায়ী">এবতেদায়ী</option><option value="দাখিল">দাখিল</option><option value="আলিম">আলিম</option><option value="ফাযিল">ফাযিল</option><option value="কামিল">কামিল</option>');
+        	}
+   	 });
+
+    $('.physical_disability_att').show();
+
+    $('input:radio[name="physical-mental-disability"]').change(function(){
+        if ($(this).is(':checked') && $(this).val() == 'হ্যাঁ') {
+            $('.physical_disability_att').find('input[type="file"]').prop('required',true);
+            $('.physical_disability_att').show();
+        }
+        else {
+            $('.physical_disability_att').find('input[type="file"]').prop('required',false);
+            $('.physical_disability_att').hide();
+
+        }
+    });
+
+    $('.other_scholarships').show();
+    $('.other_scholarships_description').hide();
+
+    $('input:radio[name="other-scholarships"]').change(function(){
+        if ($(this).is(':checked') && $(this).val() == 'হ্যাঁ') {
+            $('.other_scholarships').find('input[type="file"]').prop('required',true);
+            $('.other_scholarships').show();
+            $('.other_scholarships_description').show();
+        }
+        else {
+            $('.other_scholarships').find('input[type="file"]').prop('required',false);
+            $('.other_scholarships').hide();
+            $('.other_scholarships_description').hide();
+        }
+    });
+
+	$('.backward_area_drp_down').hide();
+
+	$('.check_area').change(function(){
+        if ($(this).is(':checked') && $(this).val() == 'হ্যাঁ') {
+        	$('.backward_area_drp_down').show();
+        }
+        else {
+        	$('.backward_area_drp_down').hide();
+        }
+    });
+
+	$("#student_name_en").keypress(function(event){
+
+        var ew = event.which;
+        var className=$(this).attr('id');
+        return onlyEnglishNameCheck(ew, className);
+
+    });
+
+	$("#student_roll_en").keypress(function(event){
+
+        var ew = event.which;
+        var className=$(this).attr('id');
+        return studentRollCheck(ew, className);
+
+    });
+
+    $("#student_dob_en").keypress(function(event){
+
+        var ew = event.which;
+        var className=$(this).attr('id');
+        return studentRollCheck(ew, className);
+
+    });
+
+    $("#student_mobile_en").on("keyup keypress", function(event){
+
+        var ew = event.which;
+        var className = $(this).attr('id');
+        return mobileNoCheck(ew, className);
+
+    });
+
+    $('#student_name_bn').keypress(function(event) {
+
+        var ch = event.which;
+        var className=$(this).attr('id');
+        return onlyBanglaNameCheck(ch, className);
+
+    });
+
+    $('#student_address_bn').keypress(function(event) {
+
+        var ch = event.which;
+        var className=$(this).attr('id');
+        return onlyBanglaNameCheck(ch, className);
+
+    });
+
+    $('#application_rational').keypress(function(event) {
+
+        var ch = event.which;
+        var className=$(this).attr('id');
+        return onlyBanglaNameCheck(ch, className);
+
+    });
+
+    $("#student_nid_en").keypress(function(event){
+
+        var ew = event.which;
+        var className=$(this).attr('id');
+        return onlyNidCheck(ew, className);
+           
+    });
+
+    $("#guardian_nid_en").keypress(function(event){
+
+        var ew = event.which;
+        var className=$(this).attr('id');
+        return onlyNidCheck(ew, className);
+           
+    });
+
+    $('#guardian_name_bn').keypress(function(event) {
+
+        var ch = event.which;
+        var className=$(this).attr('id');
+        return onlyBanglaNameCheck(ch, className);
+
+    });
+
+    $('#student_father_name_bn').keypress(function(event) {
+
+        var ch = event.which;
+        var className=$(this).attr('id');
+        return onlyBanglaNameCheck(ch, className);
+
+    });
+
+    $('#student_father_occu_bn').keypress(function(event) {
+
+        var ch = event.which;
+        var className=$(this).attr('id');
+        return onlyBanglaNameCheck(ch, className);
+
+    });
+
+    $('#student_mother_name_bn').keypress(function(event) {
+
+        var ch = event.which;
+        var className=$(this).attr('id');
+        return onlyBanglaNameCheck(ch, className);
+
+    });
+
+    $('#student_mother_occu_bn').keypress(function(event) {
+
+        var ch = event.which;
+        var className=$(this).attr('id');
+        return onlyBanglaNameCheck(ch, className);
+
+    });
+
+    $("#ins_head_nid_en").keypress(function(event){
+
+        var ew = event.which;
+        var className=$(this).attr('id');
+        return onlyNidCheck(ew, className);
+           
+    });
+
+    $("#student_family_number_en").keypress(function(event){
+
+        var ew = event.which;
+        var className=$(this).attr('id');
+        return onlyNidCheck(ew, className);
+           
+    });
+
+    $("#student_family_income_en").keypress(function(event){
+
+        var ew = event.which;
+        var className=$(this).attr('id');
+        return studentFamilyIncome(ew, className);
+           
+    });
+
+    $("#ins_head_name_en").keypress(function(event){
+
+        var ew = event.which;
+        var className=$(this).attr('id');
+        return onlyEnglishNameCheck(ew, className);
+
+    });
+
+    $("#bank_name_en").keypress(function(event){
+
+        var ew = event.which;
+        var className=$(this).attr('id');
+        return onlyEnglishNameCheck(ew, className);
+
+    });
+
+    $("#bank_branch_en").keypress(function(event){
+
+        var ew = event.which;
+        var className=$(this).attr('id');
+        return onlyEnglishNameCheck(ew, className);
+
+    });
+
+    $("#bank_routing_en").keypress(function(event){
+
+        var ew = event.which;
+        var className=$(this).attr('id');
+        return onlyEnglishNameCheck(ew, className);
+
+    });
+
+    $('#ins_head_name_bn').keypress(function(event) {
+
+        var ch = event.which;
+        var className=$(this).attr('id');
+        return onlyBanglaNameCheck(ch, className);
+
+    });
+
+    $("#ins_head_mobile_en").on("keyup keypress", function(event){
+
+        var ew = event.which;
+        var className = $(this).attr('id');
+        return mobileNoCheck(ew, className);
+
+    });
+
+    $("#teacher_mobile_en").on("keyup keypress", function(event){
+
+        var ew = event.which;
+        var className = $(this).attr('id');
+        return mobileNoCheck(ew, className);
+
+    });
+
+    $('#application_assure_bn').keypress(function(event) {
+
+        var ch = event.which;
+        var className=$(this).attr('id');
+        return onlyBanglaNameCheck(ch, className);
+
+    });
+
+    $('#teacher_address_bn').keypress(function(event) {
+
+        var ch = event.which;
+        var className=$(this).attr('id');
+        return onlyBanglaNameCheck(ch, className);
+
+    });
+
+    $('#teacher_address_bn2').keypress(function(event) {
+
+        var ch = event.which;
+        var className=$(this).attr('id');
+        return onlyBanglaNameCheck(ch, className);
+
+    });
+
+    $('#student_app_valid').keypress(function(event) {
+
+        var ch = event.which;
+        var className=$(this).attr('id');
+        return onlyBanglaNameCheck(ch, className);
+
+    });
+
+});
+
+function onlyEnglishNameCheck(ew, className) {
+    if(ew == 32 || ew == 45 || ew == 46) {
+        $('.' + className + '_text').text('');
+        return true;
+    }
+    else if(ew > 64 && ew < 91) {
+        $('.' + className + '_text').text('');
+        return true;
+    }
+    else if(ew > 96 && ew < 123) {
+        $('.' + className + '_text').text('');
+        return true;
+    }
+    else {
+        $('.' + className + '_text').text('ইনপুট অবশ্যই ইংরেজি হতে হবে।');
+        $('.' + className + '_text').css('color','red');
+        return false;
+    }
+}
+
+function studentRollCheck(ew, className) {
+    if(ew == 32 || ew == 45 || ew == 46) {
+        $('.' + className + '_text').text('');
+        return true;
+    }
+    else if(48 <= ew && ew <= 57) {
+        $('.' + className + '_text').text('');
+        return true;
+    }
+    else if(65 <= ew && ew <= 90) {
+        $('.' + className + '_text').text('');
+        return true;
+    }
+    else if(97 <= ew && ew <= 122) {
+        $('.' + className + '_text').text('');
+        return true;
+    }
+    else {
+        $('.' + className + '_text').text('ইনপুট অবশ্যই ইংরেজি হতে হবে।');
+        $('.' + className + '_text').css('color','red');
+        return false;
+    }
+}
+
+function mobileNoCheck(ew, className) {
+    if((48 <= ew && ew <= 57) || (ew==8)) {
+            
+        var getNumber = $('#' + className).val();
+        var valid_number = getNumber.match("(?:\\+88|88)?(01[3-9]\\d{8})");
+        if(!valid_number) {
+            $('.' + className + '_text').text('আপনার মোবাইল নম্বর টি সঠিক নয়।');
+            $('.' + className + '_text').css('color','red');
+        }
+        else if(valid_number && (getNumber.length !=11 )) {
+            $('.' + className + '_text').text('আপনার মোবাইল নম্বর টি সঠিক নয়।');
+            $('.' + className + '_text').css('color','red');
+        }
+        else if(valid_number && (getNumber.length > 11 )) {
+            $('.' + className + '_text').text('আপনার মোবাইল নম্বর টি সঠিক নয়।');
+            $('.' + className + '_text').css('color','red');
+            return false;
+        }
+        else {
+            $('.' + className + '_text').text('');
+            return true;
+        } 
+    }
+    else {
+        $('.' + className + '_text').text('মোবাইল নম্বরটি অবশ্যই ইংরেজি সংখ্যা হতে হবে।');
+        $('.' + className + '_text').css('color','red');
+        return false;
+    }
+}
+
+function onlyBanglaNameCheck(ew, className) {
+    var allowed='abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123456789';
+    if(allowed.indexOf(String.fromCharCode(ew)) !=-1) {
+        var enChk = true;
+    }
+    if(enChk) {
+        $('.' + className + '_text').text('ইনপুট অবশ্যই বাংলা হতে হবে।');
+        $('.' + className + '_text').css('color','red');
+        return false;    
+    }
+    else {
+        $('.' + className + '_text').text('');
+        $(this).val($(this).val().replace(/[^\u0980-\u09ff\-\. ]/g,''));
+        return true;     
+    }
+}
+
+function studentFamilyIncome(ew, className) {
+    var allowed='0123456789:=;,[]\\\\/?!£$%^&*#()_+*{}@~<>&"\'';
+    if(allowed.indexOf(String.fromCharCode(ew)) !=-1) {
+        var enChk = true;
+    }
+    if(enChk) {
+        $('.' + className + '_text').text('');
+        return true;   
+    }
+    else {
+        $('.' + className + '_text').text('ইনপুট অবশ্যই ইংরেজি সংখ্যা হতে হবে।');
+        $('.' + className + '_text').css('color','red');
+        return false;    
+    }
+}
+
+function onlyNidCheck(ew, className) {
+    if(48 <= ew && ew <= 57) {
+        $('.' + className + '_text').text('');
+        return true;
+    }
+    else {
+        $('.' + className + '_text').text('ইনপুট অবশ্যই ইংরেজি সংখ্যা হতে হবে।');
+        $('.' + className + '_text').css('color','red');
+        return false;
+    }
+}
+
+function dynamicdropdown(listindex)
+{
+	document.getElementById("instituteSemester").length = 0;
+	switch (listindex)
+	{
+	case "এবতেদায়ী" :
+		document.getElementById("instituteSemester").options[0]=new Option("নির্বাচন করুণ","");
+		document.getElementById("instituteSemester").options[1]=new Option("এবতেদায়ী ১ম শ্রেণি","এবতেদায়ী ১ম শ্রেণি");
+		document.getElementById("instituteSemester").options[2]=new Option("এবতেদায়ী ২য় শ্রেণি","এবতেদায়ী ২য় শ্রেণি");
+		document.getElementById("instituteSemester").options[3]=new Option("এবতেদায়ী ৩য় শ্রেণি","এবতেদায়ী ৩য় শ্রেণি");
+		document.getElementById("instituteSemester").options[4]=new Option("এবতেদায়ী ৪র্থ শ্রেণি","এবতেদায়ী ৪র্থ শ্রেণি");
+		document.getElementById("instituteSemester").options[5]=new Option("এবতেদায়ী ৫ম শ্রেণি","এবতেদায়ী ৫ম শ্রেণি");
+		break;
+	case "দাখিল" :
+		document.getElementById("instituteSemester").options[0]=new Option("নির্বাচন করুণ","");
+		document.getElementById("instituteSemester").options[1]=new Option("দাখিল ৬ষ্ঠ শ্রেণি","দাখিল ৬ষ্ঠ শ্রেণি");
+		document.getElementById("instituteSemester").options[2]=new Option("দাখিল ৭ম শ্রেণি","দাখিল ৭ম শ্রেণি");
+		document.getElementById("instituteSemester").options[3]=new Option("দাখিল ৮ম শ্রেণি","দাখিল ৮ম শ্রেণি");
+		document.getElementById("instituteSemester").options[4]=new Option("দাখিল ৯ম শ্রেণি","দাখিল ৯ম শ্রেণি");
+		document.getElementById("instituteSemester").options[5]=new Option("দাখিল ১০ম শ্রেণি","দাখিল ১০ম শ্রেণি");
+		document.getElementById("instituteSemester").options[6]=new Option("দাখিল পরীক্ষার্থী","দাখিল পরীক্ষার্থী");
+		break;
+	case "আলিম" :
+		document.getElementById("instituteSemester").options[0]=new Option("নির্বাচন করুণ","");
+		document.getElementById("instituteSemester").options[1]=new Option("আলিম ১ম বর্ষ","আলিম ১ম বর্ষ");
+		document.getElementById("instituteSemester").options[2]=new Option("আলিম ২য় বর্ষ","আলিম ২য় বর্ষ");
+		document.getElementById("instituteSemester").options[3]=new Option("আলিম পরীক্ষার্থী","আলিম পরীক্ষার্থী");
+		break;
+	case "ফাযিল" :
+		document.getElementById("instituteSemester").options[0]=new Option("নির্বাচন করুণ","");
+		document.getElementById("instituteSemester").options[1]=new Option("ফাযিল ১ম বর্ষ","ফাযিল ১ম বর্ষ");
+		document.getElementById("instituteSemester").options[2]=new Option("ফাযিল ২য় বর্ষ","ফাযিল ২য় বর্ষ");
+		document.getElementById("instituteSemester").options[3]=new Option("ফাযিল ৩য় বর্ষ","ফাযিল ৩য় বর্ষ");
+		document.getElementById("instituteSemester").options[4]=new Option("ফাযিল পরীক্ষার্থী","ফাযিল পরীক্ষার্থী");
+		break;
+	case "কামিল" :
+		document.getElementById("instituteSemester").options[0]=new Option("নির্বাচন করুণ","");
+		document.getElementById("instituteSemester").options[1]=new Option("কামিল ১ম বর্ষ","কামিল ১ম বর্ষ");
+		document.getElementById("instituteSemester").options[2]=new Option("কামিল ২য় বর্ষ","কামিল ২য় বর্ষ");
+		document.getElementById("instituteSemester").options[3]=new Option("কামিল পরীক্ষার্থী","কামিল পরীক্ষার্থী");
+		break;
+	case "এসএসসি (ভোক) ও দাখিল ভোক)" :
+		document.getElementById("instituteSemester").options[0]=new Option("নির্বাচন করুণ","");
+		document.getElementById("instituteSemester").options[1]=new Option("এসএসসি ভোকেশনাল ৯ম শ্রেণি","এসএসসি ভোকেশনাল ৯ম শ্রেণি");
+		document.getElementById("instituteSemester").options[2]=new Option("এসএসসি ভোকেশনাল ১০ম শ্রেণি","এসএসসি ভোকেশনাল ১০ম শ্রেণি");
+		document.getElementById("instituteSemester").options[3]=new Option("এসএসসি ভোকেশনাল পরীক্ষার্থী","এসএসসি ভোকেশনাল পরীক্ষার্থী");
+		document.getElementById("instituteSemester").options[4]=new Option("দাখিল ভোকেশনাল ৯ম শ্রেণি","দাখিল ভোকেশনাল ৯ম শ্রেণি");
+		document.getElementById("instituteSemester").options[5]=new Option("দাখিল ভোকেশনাল ১০ম শ্রেণি","দাখিল ভোকেশনাল ১০ম শ্রেণি");
+		document.getElementById("instituteSemester").options[6]=new Option("দাখিল ভোকেশনাল পরীক্ষার্থী","দাখিল ভোকেশনাল পরীক্ষার্থী");
+		break;
+	case "টেকনিক্যাল স্কুল এন্ড কলেজ (টিএসসি)" :
+		document.getElementById("instituteSemester").options[0]=new Option("নির্বাচন করুণ","");
+		document.getElementById("instituteSemester").options[1]=new Option("৬ষ্ঠ শ্রেণি","৬ষ্ঠ শ্রেণি");
+		document.getElementById("instituteSemester").options[2]=new Option("৭ম শ্রেণি","৭ম শ্রেণি");
+		document.getElementById("instituteSemester").options[3]=new Option("৮ম শ্রেণি","৮ম শ্রেণি");
+		document.getElementById("instituteSemester").options[4]=new Option("এসএসসি ভোকেশনাল ৯ম শ্রেণি","এসএসসি ভোকেশনাল ৯ম শ্রেণি");
+		document.getElementById("instituteSemester").options[5]=new Option("এসএসসি ভোকেশনাল ১০ম শ্রেণি","এসএসসি ভোকেশনাল ১০ম শ্রেণি");
+		document.getElementById("instituteSemester").options[6]=new Option("এসএসসি ভোকেশনাল ১০ম পরীক্ষার্থী","এসএসসি ভোকেশনাল ১০ম পরীক্ষার্থী");
+		document.getElementById("instituteSemester").options[7]=new Option("এইচএসসি ভোকেশনাল একাদশ শ্রেণি","এইচএসসি ভোকেশনাল একাদশ শ্রেণি");
+		document.getElementById("instituteSemester").options[8]=new Option("এইচএসসি ভোকেশনাল দ্বাদশ শ্রেণি","এইচএসসি ভোকেশনাল দ্বাদশ শ্রেণি");
+		document.getElementById("instituteSemester").options[9]=new Option("এইচএসসি ভোকেশনাল দ্বাদশ পরীক্ষার্থী","এইচএসসি ভোকেশনাল দ্বাদশ পরীক্ষার্থী");
+		break;
+	case "এইস.এস.সি (বিএম) ও ডিপ্লোমা ইন কমার্স" :
+		document.getElementById("instituteSemester").options[0]=new Option("নির্বাচন করুণ","");
+		document.getElementById("instituteSemester").options[1]=new Option("এইচএসসি (বিএম) ১ম বর্ষ","এইচএসসি (বিএম) ১ম বর্ষ");
+		document.getElementById("instituteSemester").options[2]=new Option("এইচএসসি (বিএম) ২য় বর্ষ","এইচএসসি (বিএম) ২য় বর্ষ");
+		document.getElementById("instituteSemester").options[3]=new Option("এইচএসসি (বিএম) পরীক্ষার্থী","এইচএসসি (বিএম) পরীক্ষার্থী");
+		document.getElementById("instituteSemester").options[4]=new Option("ডিপ্লোমা ইন কমার্স ১ম বর্ষ","ডিপ্লোমা ইন কমার্স ১ম বর্ষ");
+		document.getElementById("instituteSemester").options[5]=new Option("ডিপ্লোমা ইন কমার্স ২য় বর্ষ","ডিপ্লোমা ইন কমার্স ২য় বর্ষ");
+		document.getElementById("instituteSemester").options[6]=new Option("ডিপ্লোমা ইন কমার্স পরীক্ষার্থী","ডিপ্লোমা ইন কমার্স পরীক্ষার্থী");
+		break;
+	case "ডিপ্লোমা" :
+		document.getElementById("instituteSemester").options[0]=new Option("নির্বাচন করুণ","");
+		document.getElementById("instituteSemester").options[1]=new Option("ডিপ্লোমা ১ম পর্ব","ডিপ্লোমা ১ম পর্ব");
+		document.getElementById("instituteSemester").options[2]=new Option("ডিপ্লোমা ২য় পর্ব","ডিপ্লোমা ২য় পর্ব");
+		document.getElementById("instituteSemester").options[3]=new Option("ডিপ্লোমা ৩য় পর্ব","ডিপ্লোমা ৩য় পর্ব");
+		document.getElementById("instituteSemester").options[4]=new Option("ডিপ্লোমা ৪র্থ পর্ব","ডিপ্লোমা ৪র্থ পর্ব");
+		document.getElementById("instituteSemester").options[5]=new Option("ডিপ্লোমা ৫ম পর্ব","ডিপ্লোমা ৫ম পর্ব");
+		document.getElementById("instituteSemester").options[6]=new Option("ডিপ্লোমা ৬ষ্ঠ পর্ব","ডিপ্লোমা ৬ষ্ঠ পর্ব");
+		document.getElementById("instituteSemester").options[7]=new Option("ডিপ্লোমা ৭ম পর্ব","ডিপ্লোমা ৭ম পর্ব");
+		document.getElementById("instituteSemester").options[8]=new Option("ডিপ্লোমা ৮ম পর্ব","ডিপ্লোমা ৮ম পর্ব");
+		break;
+	case "ইঞ্জিনিয়ারিং কলেজ" :
+		document.getElementById("instituteSemester").options[0]=new Option("নির্বাচন করুণ","");
+		document.getElementById("instituteSemester").options[1]=new Option("বিএসসি (ইঞ্জি:) ১ম পর্ব","বিএসসি (ইঞ্জি:) ১ম পর্ব");
+		document.getElementById("instituteSemester").options[2]=new Option("বিএসসি (ইঞ্জি:) ২য় পর্ব","বিএসসি (ইঞ্জি:) ২য় পর্ব");
+		document.getElementById("instituteSemester").options[3]=new Option("বিএসসি (ইঞ্জি:) ৩য় পর্ব","বিএসসি (ইঞ্জি:) ৩য় পর্ব");
+		document.getElementById("instituteSemester").options[4]=new Option("বিএসসি (ইঞ্জি:) ৪র্থ পর্ব","বিএসসি (ইঞ্জি:) ৪র্থ পর্ব");
+		document.getElementById("instituteSemester").options[5]=new Option("বিএসসি (ইঞ্জি:) ৫ম পর্ব","বিএসসি (ইঞ্জি:) ৫ম পর্ব");
+		document.getElementById("instituteSemester").options[6]=new Option("বিএসসি (ইঞ্জি:) ৬ষ্ঠ পর্ব","বিএসসি (ইঞ্জি:) ৬ষ্ঠ পর্ব");
+		document.getElementById("instituteSemester").options[7]=new Option("বিএসসি (ইঞ্জি:) ৭ম পর্ব","বিএসসি (ইঞ্জি:) ৭ম পর্ব");
+		document.getElementById("instituteSemester").options[8]=new Option("বিএসসি (ইঞ্জি:) ৮ম পর্ব","বিএসসি (ইঞ্জি:) ৮ম পর্ব");
+		break;
+	}
+	return true;
+}
+
+
+// $('.tea_emp_nid_check').bind('keyup blur',function() {
+    
+// });

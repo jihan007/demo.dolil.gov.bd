@@ -1,0 +1,318 @@
+/**
+ * Created by Md. Munir Hossain on 06/06/2021.
+ */
+
+function getGeoDivision(){
+    if ($('.geo-division').is(':visible')) {
+        $.ajax({
+            datType: 'json',
+            url: nDoptor,
+            data: {
+                'path': 'division'
+            },
+            beforeSend: function() {
+                $('.geo-division').each(function() {
+                    if (!$(this).hasClass('d-none')) {
+                        $(this).find('select').html('<option value="">লোডিং...</option>');
+                    }
+                });
+            },
+            success: function(data) {
+                data = JSON.parse(data);
+                var items = [];
+                items.push('<option value="">বিভাগ </option>');
+                var j = 1;
+                $.each(data, function(i, v) {
+                    if (parseInt(v['bbsCode']) > 0)
+                        items.push('<option value="' + v['nameBn'] + '" data-id="' + v['id'] + '">' + v['nameBn'] + '</option>');
+                    j = j + 1;
+                });
+
+                $('.geo-division').each(function(){
+                    if(!$(this).hasClass('d-none')) {
+                        $(this).find('select').html('');
+                        $(this).find('select').html(items.join(''));
+                        $(this).find('select').change(function(){
+                            getGeoDistrict($(this).find('option:selected').attr('data-id'),$(this));
+                        });
+                    }
+                });
+            }
+        });
+    }else{
+        getGeoDistrict();
+    }
+}
+
+function getGeoDistrict(division, ele){
+    if ($('.geo-district').is(':visible')) {
+        $.ajax({
+            datType: 'json',
+            url: nDoptor,
+            data: {
+                'path': 'district?division=' + division,
+            },
+            beforeSend: function() {},
+            success: function(data) {
+                data = JSON.parse(data);
+                var items = [];
+                items.push('<option value="">জেলা </option>');
+                var j = 1;
+                $.each(data, function(i, v) {
+                    if (parseInt(v['bbsCode']) > 0)
+                        items.push('<option value="' + v['nameBn'] + '" data-id="' + v['id'] + '">' + v['nameBn'] + '</option>');
+                    j = j + 1;
+                });
+
+                if(ele !== null && ele !== undefined){
+                    ele.parents('div.geo-group').find('.geo-district').each(function(){
+                        if(!$(this).hasClass('d-none')) {
+                            $(this).find('select').html('');
+                            $(this).find('select').html(items.join(''));
+                            $(this).find('select').change(function(){
+                                getCityCorporation($(this).find('option:selected').attr('data-id'),$(this));
+                                getMunicipality($(this).find('option:selected').attr('data-id'),$(this));
+                                getGeoUpazila($(this).find('option:selected').attr('data-id'),$(this));
+                            });
+                        }
+                    });
+                }else {
+                    $('.geo-district').each(function(){
+                        if(!$(this).hasClass('d-none')) {
+                            $(this).find('select').html('');
+                            $(this).find('select').html(items.join(''));
+                            $(this).find('select').change(function(){
+                                getCityCorporation($(this).find('option:selected').attr('data-id'),$(this));
+                                getMunicipality($(this).find('option:selected').attr('data-id'),$(this));
+                                getGeoUpazila($(this).find('option:selected').attr('data-id'),$(this));
+                            });
+                        }
+                    });
+                }
+            }
+        });
+    }
+}
+
+function getGeoUpazila(district, ele){
+    if ($('.geo-district').is(':visible')) {
+        $.ajax({
+            datType: 'json',
+            url: nDoptor,
+            data: {
+                'path': 'upazilla?district=' + district,
+            },
+            beforeSend: function() {},
+            success: function(data) {
+                data = JSON.parse(data);
+                var items = [];
+                items.push('<option value="">উপজেলা </option>');
+                var j = 1;
+                $.each(data, function(i, v) {
+                    if (parseInt(v['bbsCode']) > 0)
+                        items.push('<option value="' + v['nameBn'] + '" data-id="' + v['id'] + '">' + v['nameBn'] + '</option>');
+                    j = j + 1;
+                });
+
+                if(ele !== null && ele !== undefined){
+                    ele.parents('div.geo-group').find('.geo-upazila').each(function(){
+                        if(!$(this).hasClass('d-none')) {
+                            $(this).find('select').html('');
+                            $(this).find('select').html(items.join(''));
+                            $(this).find('select').change(function(){
+                                getGeoUnion($(this).find('option:selected').attr('data-id'),$(this));
+                            });
+                            //$(this).find('select').change(function(){
+                            //    getGeoUpazila($(this).find('option:selected').attr('data-id'),$(this));
+                            //});
+                        }
+                    });
+                }else {
+                    $('.geo-upazila').each(function(){
+                        if(!$(this).hasClass('d-none')) {
+                            $(this).find('select').html('');
+                            $(this).find('select').html(items.join(''));
+                            $(this).find('select').change(function(){
+                                getGeoUnion($(this).find('option:selected').attr('data-id'),$(this));
+                            });
+                            //$(this).find('select').change(function(){
+                            //    getGeoUpazila($(this).find('option:selected').attr('data-id'),$(this));
+                            //});
+                        }
+                    });
+                }
+            }
+        });
+    }
+}
+
+function getGeoUnion(upazilla, ele){
+    if ($('.geo-upazila').is(':visible')) {
+        $.ajax({
+            datType: 'json',
+            url: nDoptor,
+            data: {
+                'path': 'union?upazilla=' + upazilla,
+            },
+            beforeSend: function() {},
+            success: function(data) {
+                data = JSON.parse(data);
+                var items = [];
+                items.push('<option value="">ইউনিয়ন</option>');
+                var j = 1;
+                $.each(data, function(i, v) {
+                    if (parseInt(v['bbsCode']) > 0)
+                        items.push('<option value="' + v['nameBn'] + '" data-id="' + v['id'] + '">' + v['nameBn'] + '</option>');
+                    j = j + 1;
+                });
+
+                if(ele !== null && ele !== undefined){
+                    ele.parents('div.geo-group').find('.geo-union').each(function(){
+                        if(!$(this).hasClass('d-none')) {
+                            $(this).find('select').html('');
+                            $(this).find('select').html(items.join(''));
+                            //$(this).find('select').change(function(){
+                            //    getGeoUpazila($(this).find('option:selected').attr('data-id'),$(this));
+                            //});
+                        }
+                    });
+                }else {
+                    $('.geo-union').each(function(){
+                        if(!$(this).hasClass('d-none')) {
+                            $(this).find('select').html('');
+                            $(this).find('select').html(items.join(''));
+                            //$(this).find('select').change(function(){
+                            //    getGeoUpazila($(this).find('option:selected').attr('data-id'),$(this));
+                            //});
+                        }
+                    });
+                }
+            }
+        });
+    }
+}
+
+function getCityCorporation(district, ele){
+    if ($('.geo-city-corporation').is(':visible')) {
+        $.ajax({
+            datType: 'json',
+            url: nDoptor,
+            data: {
+                'path': 'citycorporation?district=' + district,
+            },
+            beforeSend: function() {},
+            success: function(data) {
+                data = JSON.parse(data);
+                var items = [];
+                items.push('<option value="">সিটি কর্পোরেশন </option>');
+                var j = 1;
+                $.each(data, function(i, v) {
+                    if (parseInt(v['bbsCode']) > 0)
+                        items.push('<option value="' + v['nameBn'] + '" data-id="' + v['id'] + '">' + v['nameBn'] + '</option>');
+                    j = j + 1;
+                });
+
+                if(ele !== null && ele !== undefined){
+                    ele.parents('div.geo-group').find('.geo-city-corporation').each(function(){
+                        if(!$(this).hasClass('d-none')) {
+                            $(this).find('select').html('');
+                            $(this).find('select').html(items.join(''));
+                            //$(this).find('select').change(function(){
+                            //    getGeoUpazila($(this).find('option:selected').attr('data-id'),$(this));
+                            //});
+                        }
+                    });
+                }else {
+                    $('.geo-city-corporation').each(function(){
+                        if(!$(this).hasClass('d-none')) {
+                            $(this).find('select').html('');
+                            $(this).find('select').html(items.join(''));
+                            //$(this).find('select').change(function(){
+                            //    getGeoUpazila($(this).find('option:selected').attr('data-id'),$(this));
+                            //});
+                        }
+                    });
+                }
+            }
+        });
+    }
+}
+
+function getMunicipality(district, ele){
+    if ($('.geo-municipality').is(':visible')) {
+        $.ajax({
+            datType: 'json',
+            url: nDoptor,
+            data: {
+                'path': 'municipalitie?district=' + district,
+            },
+            beforeSend: function() {},
+            success: function(data) {
+                data = JSON.parse(data);
+                var items = [];
+                items.push('<option value="">পৌরসভা </option>');
+                var j = 1;
+                $.each(data, function(i, v) {
+                    if (parseInt(v['bbsCode']) > 0)
+                        items.push('<option value="' + v['nameBn'] + '" data-id="' + v['id'] + '">' + v['nameBn'] + '</option>');
+                    j = j + 1;
+                });
+
+                if(ele !== null && ele !== undefined){
+                    ele.parents('div.geo-group').find('.geo-municipality').each(function(){
+                        if(!$(this).hasClass('d-none')) {
+                            $(this).find('select').html('');
+                            $(this).find('select').html(items.join(''));
+                            //$(this).find('select').change(function(){
+                            //    getGeoUpazila($(this).find('option:selected').attr('data-id'),$(this));
+                            //});
+                        }
+                    });
+                }else {
+                    $('.geo-municipality').each(function(){
+                        if(!$(this).hasClass('d-none')) {
+                            $(this).find('select').html('');
+                            $(this).find('select').html(items.join(''));
+                            //$(this).find('select').change(function(){
+                            //    getGeoUpazila($(this).find('option:selected').attr('data-id'),$(this));
+                            //});
+                        }
+                    });
+                }
+            }
+        });
+    }
+}
+
+jQuery(document).ready(function(){
+
+    /*GEO*/
+    $('.geo_division_id').parent('div').addClass('geo-division');
+    $('.geo_district_id').parent('div').addClass('geo-district');
+    $('.geo_upazilla_id').parent('div').addClass('geo-upazila');
+    $('.geo_union_id').parent('div').addClass('geo-union');
+    $('.geo_division_id').removeClass('geo_division_id');
+    $('.geo_district_id').removeClass('geo_district_id');
+    $('.geo_upazilla_id').removeClass('geo_upazilla_id');
+    $('.geo_union_id').removeClass('geo_union_id');
+    if(($('.geo-division').length==1 || $('.geo-district').length==1) && !$('.geo-group').length){
+        $('#application-form div:first-child').addClass('geo-group');
+    }
+    else if(!$('.geo-division').length && $('.geo-district').length>1){
+        $('.geo-district').each(function(){
+            $(this).parents().has($('.geo-upazila')).first().addClass('geo-group');
+        });
+    }
+    else if(!$('.geo-district').length && $('.geo-upazila').length>1){
+        $('.geo-upazila').each(function(){
+            $(this).parents().has($('.geo-union')).first().addClass('geo-group');
+        });
+    }
+    else if($('.geo-division').length && $('.geo-division').length>1){
+        $('.geo-division').each(function(){
+            $(this).parents().has($('.geo-district')).first().addClass('geo-group');
+        });
+    }
+    /*GEO*/
+    getGeoDivision();
+});

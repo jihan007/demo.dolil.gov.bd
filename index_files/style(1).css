@@ -1,0 +1,187 @@
+input:-webkit-autofill,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:hover {
+    -webkit-box-shadow: 0 0 0 1000px #fff inset !important
+}
+
+.socianSearchIcon::before {
+    content: "\f002";
+    font-family: FontAwesome;
+    color: #00664c;
+    z-index: 999;
+    margin-left: 30px;
+    font-size: 22px
+}
+
+div.socian_scrollmenu {
+    margin-left: 15px;
+    margin-right: 15px;
+    overflow: auto;
+    white-space: nowrap;
+}
+
+.socian_scrollmenu::-webkit-scrollbar {
+    display: block;
+    width: 3px;
+    height: 3px;
+}
+.socian_scrollmenu::-webkit-scrollbar-track {
+    background: transparent;
+}
+    
+.socian_scrollmenu::-webkit-scrollbar-thumb {
+    background-color: #23584b;
+    border-right: none;
+    border-left: none;
+}
+
+.socian_scrollmenu::-webkit-scrollbar-track-piece:end {
+    background: transparent;
+    margin-bottom: 10px; 
+}
+
+.socian_scrollmenu::-webkit-scrollbar-track-piece:start {
+    background: transparent;
+    margin-top: 10px;
+}
+
+div.socian_scrollmenu a {
+    display: inline-block;
+    text-align: center;
+    padding: 14px;
+    color: #fff !important;
+    text-decoration: none;
+}
+
+.socian_pagination_page:hover {
+    background-color: #23584b !important;
+}
+
+input.socianInputArea {
+    width: 100%;
+    font-size: 18px;
+    font-weight: 600;
+    padding: 14px 150px;
+    border-radius: 6px;
+    border: none;
+    margin: 25px 0
+}
+
+input.socianInputArea::placeholder {
+    color: #000
+}
+
+input.socianInputArea:focus {
+    outline: 0
+}
+
+.socianSearchIcon {
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%)
+}
+
+a#socian_audio_input {
+    z-index: 999;
+    position: absolute;
+    right: 3px;
+    top: 50%;
+    transform: translateY(-50%)
+}
+
+.socianSearchResultArea {
+    padding-top: 50px
+}
+
+
+.socianResultContent {
+    margin-top: 34px
+}
+
+.socianSourcetoolsDropdownMenu ul {
+    border-radius: 6px;
+    background-color: #e0495a;
+    margin: 0;
+    padding: 0;
+    left: 131px;
+    min-width: 121px;
+    list-style: none;
+    padding-top: 20px;
+    position: relative;
+    /* min-width: 108px; */
+}
+
+
+.socianNoticeArea h3.title {
+    font-size: 16px;
+    font-weight: bold;
+    color: #000;
+    text-align: center
+}
+
+#socianSearch #pagination {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+#socianSearch #pagination a {
+    padding: 4px 6px;
+    font-size: 14px;
+    font-weight: bold;
+    box-shadow: 0 0 4px -2px;
+    border-radius: 4px;
+    margin: 0 1px;
+    background-color: #2f8754;
+}
+
+#socianSearch #pagination a:hover {
+    cursor: pointer;
+    box-shadow: 0 0 6px -2px;
+}
+
+#socianSearch .socian_noticeDropdownMenu li:hover {
+    background-color: #00664c; 
+    cursor: pointer;
+    border-radius: 6px 6px 6px 6px; 
+}
+
+#socianSearch .socianOfficeDropdown li:hover {
+    background-color: #00664c; 
+    cursor: pointer;
+    border-radius: 6px 6px 6px 6px; 
+}
+
+#socianSearch .socian_sourcedrop_item_tools li:hover {
+    background-color: #00664c; 
+    cursor: pointer;
+    border-radius: 6px 6px 6px 6px; 
+}
+
+#socianSearch .drop_item_tools li:hover {
+    background-color: #00664c; 
+    cursor: pointer;
+    border-radius: 6px 6px 6px 6px; 
+}
+
+@media only screen and (max-width: 575px) {
+    /* Styles */
+    div.socian_pagination_class {
+        display: none !important;
+    }
+    
+    div.socianSearchIcon {
+        display: none !important;
+    }
+    
+    input.socianInputArea {
+        padding: 12px 13px !important;
+    }
+
+    div.socianSearchResultArea {
+        width: 391px;
+    }
+    
+    div.socianBreadcrumb {
+        display: block !important;
+    }
+}

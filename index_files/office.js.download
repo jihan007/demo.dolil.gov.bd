@@ -1,0 +1,357 @@
+/**
+ * Created by Md. Munir Hossain on 27/11/2021.
+ */
+
+var officeLayer = JSON.parse(officeLayer);
+
+var office_id = [];
+var office_name = [];
+var office_layer;
+var office_origin;
+var office_district;
+var bank_info = [];
+var office_origin_unit = [];
+var submit_desk = [];
+var geo_ministry = [];
+var geo_division = [];
+var geo_district = [];
+var geo_upazila = [];
+var error = false;
+
+function officeList(officeLayer) {
+    var items = [];
+    var co = 1;
+    var ch = 0;
+    ch = $('#new_office_layer_office').attr('data');
+    items.push('<option value="">বাছাই করুন</option>');
+    $.each(officeLayer, function (i, v) {
+        if(typeof v['id'] !== "undefined" && (ch==0 || ch==v['id'])) {
+            if(ch==v['id'])
+                items.push('<option value="' + v['id'] + '" selected="selected">' + v['nameBn'] + '</option>');
+            else
+                items.push('<option value="' + v['id'] + '">' + v['nameBn'] + '</option>');
+            co = co + 1;
+        }
+    });
+
+    //$('#new_office_layer_origin').find('option[value="' + $('#new_office_layer_origin').attr('data') + '"]').attr('selected','selected');
+
+    $('#new_office_layer_office').html(items.join(''));
+    $('#new_office_layer_office').show();
+
+    if($('#new_office_layer_office').find('option').length==2){
+        $('#new_office_layer_office').find('option:nth-child(1)').attr('selected','selected');
+        // $('#new_office_layer_office').find('option:nth-child(1)').remove();
+    }
+
+    //getUnitInformation();
+}
+
+function resetCollection() {
+    office_id = [];
+    office_name = [];
+    office_layer;
+    office_origin;
+    office_district;
+    bank_info = [];
+    office_origin_unit = [];
+    submit_desk = [];
+    geo_ministry = [];
+    geo_division = [];
+    geo_district = [];
+    geo_upazila = [];
+    error = false;
+}
+
+function collectInfo(par) {
+    office_id.push(par.attr('data-id'));
+    office_layer = $('[name="office_layer"]').val();
+    if($('[name="office_origin"]').is(':visible'))
+        office_origin = $('[name="office_origin"]').val();
+    else office_origin = 0;
+    if($('[name="office_district"]').is(':visible'))
+        office_district = $('[name="office_district"]').val();
+    else office_district = 0;
+
+    geo_ministry.push(par.attr('geo-ministry'));
+    geo_division.push(par.attr('geo-division'));
+    geo_district.push(par.attr('geo-district'));
+    geo_upazila.push(par.attr('geo-upazila'));
+
+    office_name.push(par.find('[for="officeId' + par.attr('data-id') + '"]').html());
+
+    if(par.find('.bank_info').is(':visible') && par.find('.bank_info').val()!='') {
+        par.find('.bank_info').removeClass('required-error');
+        bank_info.push(par.find('.bank_info').val());
+    }else {
+        par.find('.bank_info').addClass('required-error');
+        error = true;
+    }
+
+    if(par.find('.office_origin_unit').val()!='') {
+        par.find('.office_origin_unit').removeClass('required-error');
+        office_origin_unit.push(par.find('.office_origin_unit').val());
+    }else{
+        par.find('.office_origin_unit').addClass('required-error');
+        error = true;
+    }
+
+    if(par.find('.submit_desk').val()!='') {
+        par.find('.submit_desk').removeClass('required-error');
+        submit_desk.push(par.find('.submit_desk').val());
+    }else{
+        par.find('.submit_desk').addClass('required-error');
+        error = true;
+    }
+}
+
+function addOffice(){
+    if(!error) {
+        $('#serviceAssign').find('div').html('');
+        $('#serviceAssign').find('div').append('<input type="hidden" name="office_id" value="[' + office_id.join(',') + ']">');
+        $('#serviceAssign').find('div').append('<input type="hidden" name="office_name" value=\'' + JSON.stringify(office_name) + '\'>');
+        $('#serviceAssign').find('div').append('<input type="hidden" name="office_layer" value="' + office_layer + '">');
+        $('#serviceAssign').find('div').append('<input type="hidden" name="office_origin" value="' + office_origin + '">');
+        $('#serviceAssign').find('div').append('<input type="hidden" name="office_district" value="' + office_district + '">');
+        $('#serviceAssign').find('div').append('<input type="hidden" name="geo_ministry" value="[' + geo_ministry.join(',') + ']">');
+        $('#serviceAssign').find('div').append('<input type="hidden" name="geo_division" value="[' + geo_division.join(',') + ']">');
+        $('#serviceAssign').find('div').append('<input type="hidden" name="geo_district" value="[' + geo_district.join(',') + ']">');
+        $('#serviceAssign').find('div').append('<input type="hidden" name="geo_upazila" value="[' + geo_upazila.join(',') + ']">');
+
+        $('#serviceAssign').find('div').append('<input type="hidden" name="bank_info" value="[' + bank_info.join(',') + ']">');
+        $('#serviceAssign').find('div').append('<input type="hidden" name="office_origin_unit" value="[' + office_origin_unit.join(',') + ']">');
+        $('#serviceAssign').find('div').append('<input type="hidden" name="submit_desk" value="[' + submit_desk.join(',') + ']">');
+
+        $('#serviceAssign').submit();
+    }
+}
+
+function getUnitInformation(){
+    $('#new_office_layer_office tr').each(function(){
+        var officeId = $(this).attr('data-id');
+        var element = $(this);
+        var items = [];
+        items.push('<option value="">বাছাই করুন</option>');
+        $.ajax({
+            type: 'POST',
+            url: baseUrl + 'doptor',
+            data: {'path': 'officeunit?office=' + officeId + '&status=1&xgorder=parent'},
+            beforeSend: function () {
+                element.find('.office_origin_unit').html('<option>Loading...</option>');
+            },
+            success: function (officeLayer) {
+                officeLayer = JSON.parse(officeLayer);
+                $.each(officeLayer, function (i, v) {
+                    items.push('<option data-id="' + v['id'] + '" value="' + v['officeoriginunitid'] + '">' + v['nameBn'] + '</option>');
+                });
+                element.find('.office_origin_unit').html(items.join(''));
+
+                getDeskInformation();
+            }
+        });
+    });
+}
+
+function getDeskInformation() {
+    $('.office_origin_unit').change(function(e){
+        var unit = $(this).find(":selected").attr('data-id');
+        var element = $(this).parents('tr');
+        var items = [];
+        items.push('<option value="">বাছাই করুন</option>');
+        items.push('<option value="0">ফ্রন্ট ডেস্ক (Front Desk)</option>');
+        $.ajax({
+            type: 'POST',
+            url: baseUrl + 'doptor',
+            officeLayer: {'path': 'officeunitorganogram?unit=' + unit + '&status=1&xgorder=designationLevel&xglimit=1&xgselect=unit+nameBn+name+office+id+refOrigin'},
+            beforeSend: function () {
+                element.find('.submit_desk').html('<option>Loading...</option>');
+            },
+            success: function (officeLayer) {
+                officeLayer = JSON.parse(officeLayer);
+                $.each(officeLayer, function (i, v) {
+                    items.push('<option value="' + v['id'] + '">' + v['nameBn'] + '</option>');
+                });
+                element.find('.submit_desk').html(items.join(''));
+            }
+        });
+        e.stopImmediatePropagation();
+    });
+}
+
+function buildOffices(id) {
+    $('.office-selection').html('');
+    var items = [];
+    items.push('<option value="">বাছাই করুন</option>');
+
+    if(id==1 || id==2){
+        if(id==1){
+            officeList(officeLayer.ministryOffices);
+        }else if(id==2){
+            officeList(officeLayer.doptorOfffices);
+        }
+    }
+
+    if(id==3 || id==4 || id==7 || id==5){
+        if(id==3){
+            $.each(officeLayer.otherOffices, function (i, v) {
+                items.push('<option data="otherOffices" value="' + i + '">' + v['name'] + '</option>');
+            });
+        }else if(id==4){
+            $.each(officeLayer.divisionOffices, function (i, v) {
+                items.push('<option data="divisionOffices" value="' + i + '">' + v['name'] + '</option>');
+            });
+        }else if(id==7){
+            $.each(officeLayer.localOffices, function (i, v) {
+                items.push('<option data="localOffices" value="' + i + '">' + v['name'] + '</option>');
+            });
+        }else if(id==5){
+            $.each(officeLayer.districtOffices, function (i, v) {
+                items.push('<option data="districtOffices" value="' + i + '">' + v['name'] + '</option>');
+            });
+        }
+        $('#new_office_layer_origin').html(items.join(''));
+        if($('#new_office_layer_origin').find('option').length==2){
+            $('#new_office_layer_origin').find('option:nth-child(1)').attr('selected','selected');
+            $('#new_office_layer_origin').attr('data',$('#new_office_layer_origin').find('option:nth-child(2)').attr('value'));
+            // $('#new_office_layer_origin').find('option:nth-child(1)').remove();
+        }
+        
+        $('#new_office_layer_origin').show();
+        $('#new_office_layer_origin').parent('div').show();
+        
+        if($('#new_office_layer_origin').attr('data')!='') {
+            $('#new_office_layer_origin').find('option[value="' + $('#new_office_layer_origin').attr('data') + '"]').attr('selected','selected');
+
+            var id = $('#new_office_layer_origin').find(":selected").attr('value');
+            var type = $('#new_office_layer_origin').find(":selected").attr('data');
+            
+            if (type == 'upazilaOffices') {
+                loadDistrictByOrigin(type, id);
+            } else if (id != '') {
+                buildOfficeByOrigin(type, id);
+            }
+        }
+    }
+
+    if(id==6){
+        $.each(officeLayer.upazilaOffices, function (i, v) {
+            items.push('<option data="upazilaOffices" value="' + i + '">' + v['name'] + '</option>');
+        });
+
+        $('#new_office_layer_origin').html(items.join(''));
+        if($('#new_office_layer_origin').find('option').length==2){
+            $('#new_office_layer_origin').find('option:nth-child(2)').attr('selected','selected');
+            $('#new_office_layer_origin').attr('data',$('#new_office_layer_origin').find('option:nth-child(2)').attr('value'));
+        }
+
+        $('#new_office_layer_origin').show();
+        $('#new_office_layer_origin').parent('div').show();
+        
+        if($('#new_office_layer_origin').attr('data')!='') {
+            $('#new_office_layer_origin').find('option[value="' + $('#new_office_layer_origin').attr('data') + '"]').attr('selected','selected');
+            var id = $('#new_office_layer_origin').find(":selected").attr('value');
+            var type = $('#new_office_layer_origin').find(":selected").attr('data');
+
+            if (type == 'upazilaOffices') {
+                loadDistrictByOrigin(type, id);
+            } else if (id != '') {
+                buildOfficeByOrigin(type, id);
+            }
+        }
+    }
+}
+
+function buildOfficeByOrigin(type,id) {
+    officeList(officeLayer[type][id]['offices']);
+}
+
+function loadDistrictByOrigin(type,id) {
+    var items = [];
+    items.push('<option value="">বাছাই করুন</option>');
+    officeList(officeLayer[type][id]['district']);
+    $.each(officeLayer[type][id]['district'], function (i, v) {
+        items.push('<option value="' + i + '">' + v['name'] + '</option>');
+    });
+    $('#new_office_layer_district').html(items.join(''));
+    if($('#new_office_layer_district').find('option').length==2){
+        $('#new_office_layer_district').find('option:nth-child(2)').attr('selected','selected');
+        $('#new_office_layer_district').attr('data',$('#new_office_layer_district').find('option:nth-child(2)').attr('value'));
+    }
+    $('#new_office_layer_district').show();
+    $('#new_office_layer_district').parent('div').show();
+}
+
+function buildOfficeByDistrict(oid,id) {
+    officeList(officeLayer.upazilaOffices[oid]['district'][id]['offices']);
+}
+
+function resetLayers() {
+    $('#new_office_layer_ministry,#new_office_layer_odidoptor,#new_office_layer_origin,#new_office_layer_district,#new_office_layer_office').html('')
+    $('#new_office_layer_ministry,#new_office_layer_odidoptor,#new_office_layer_origin,#new_office_layer_district,#new_office_layer_office').hide();
+    $('#new_office_layer_ministry,#new_office_layer_odidoptor,#new_office_layer_origin,#new_office_layer_district,_#new_office_layer_office').parent('div').hide()
+}
+
+
+jQuery(document).ready(function($){
+
+    resetLayers();
+
+    $('.all-checkbox').on('click',function(){
+        if($(this).is(':checked')) {
+            $('#new_office_layer_office').find('input[type="checkbox"]').prop('checked', true);
+            $('.addAllOffice').removeClass('btn-light').addClass('btn-success');
+        }else {
+            $('#new_office_layer_office').find('input[type="checkbox"]').prop('checked', false);
+            $('.addAllOffice').removeClass('btn-success').addClass('btn-light');
+        }
+    });
+
+    $('#new_office_layer_category').change(function(){
+        resetLayers();
+        var id = $(this).val();
+        if(id!=''){
+            buildOffices(id);
+        }
+    });
+
+    $('#new_office_layer_origin').change(function(){
+
+        var id = $(this).find(":selected").attr('value');
+        var type = $(this).find(":selected").attr('data');
+
+        if(type=='upazilaOffices'){
+            loadDistrictByOrigin(type,id);
+        }else if(id!='') {
+            buildOfficeByOrigin(type,id);
+        }
+    });
+
+    $('#new_office_layer_district').change(function () {
+        var id = $(this).find(":selected").attr('value');
+        var oid = $('#new_office_layer_origin').find(":selected").attr('value');
+        if(id!=''){
+            buildOfficeByDistrict(oid,id);
+        }
+    });
+
+    $('#new_office_layer_office').change(function(){
+        //if($(this).val()!='')
+        //    setOfficeName($(this).val());
+    });
+
+    $('#new_office_layer_category').find('option[value="' + $('#new_office_layer_category').attr('data') + '"]').attr('selected','selected');
+
+    if($('#new_office_layer_category').find('option').length==2){
+        $('#new_office_layer_category').find('option:nth-child(2)').attr('selected','selected');
+        $('#new_office_layer_category').attr('data',$('#new_office_layer_category').find('option:nth-child(2)').attr('value'));
+        $('#new_office_layer_category').find('option:nth-child(1)').remove();
+    }
+
+    if($('#new_office_layer_category').val()>0){
+        resetLayers();
+        var id = $('#new_office_layer_category').val();
+        if(id!=''){
+            buildOffices(id);
+        }
+    }
+});
